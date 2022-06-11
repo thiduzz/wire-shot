@@ -6,6 +6,7 @@ import "@nomiclabs/hardhat-waffle";
 import "@typechain/hardhat";
 import "hardhat-gas-reporter";
 import "solidity-coverage";
+import "hardhat-abi-exporter"
 
 dotenv.config();
 
@@ -43,6 +44,15 @@ const config: HardhatUserConfig = {
     enabled: process.env.REPORT_GAS !== undefined,
     currency: "USD",
   },
+  abiExporter: {
+    path: './data/abi',
+    runOnCompile: true,
+    clear: true,
+    flat: true,
+    // only: [':ERC20$'],
+    spacing: 2,
+    pretty: false,
+  }
 };
 
 export default config;

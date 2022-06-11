@@ -14,14 +14,14 @@ contract RestaurantSpawner {
 
     constructor() {}
 
-    function addRestaurant(string memory _name) public returns (bool success) {
+    function addRestaurant(string memory _name) public returns (address) {
         Restaurant restaurant = new Restaurant(
             msg.sender,
             _name
         );
         address restaurantAddress = restaurant._getAddress();
         restaurants[msg.sender].push(restaurantAddress);
-        return true;
+        return restaurantAddress;
     }
 
     function getRestaurants(address _owner) external view returns (address[] memory ownerRestaurants) {

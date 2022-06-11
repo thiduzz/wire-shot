@@ -83,5 +83,6 @@ export const useEthers = () => {
         disconnectWallet,
         loadAlreadyAuthorizedWallet,
         getSigner,
+        getProvider
     };
 };
