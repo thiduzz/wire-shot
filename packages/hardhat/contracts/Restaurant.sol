@@ -35,8 +35,8 @@ contract Restaurant {
         uint256 id;
     }
 
-    constructor(string memory _name) {
-        owner = msg.sender;
+    constructor(address _owner, string memory _name) {
+        owner = _owner;
         name = _name;
         MENU_ITEM_IDS.increment();
         TABLE_IDS.increment();
