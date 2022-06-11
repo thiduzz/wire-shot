@@ -1,0 +1,89 @@
+
+.page-content {
+    @apply flex flex-col items-center min-h-full flex-nowrap px-5 pt-16;
+}
+
+a {
+    @apply text-green-500 hover:underline hover:opacity-70 cursor-pointer;
+}
+
+@media screen(md) {
+    .page-content {
+        @apply container mx-auto;
+    }
+}
+
+.richtext-content, .markdown-content, .general-content {
+
+    p {
+        @apply my-3
+    }
+
+    h1 {
+        @apply text-3xl text-left my-3;
+    }
+
+    h2 {
+        @apply text-2xl text-left my-3;
+    }
+
+    h3 {
+        @apply text-xl text-left my-3;
+    }
+
+    ol {
+        @apply list-decimal my-3  pl-5;
+    }
+
+    ul {
+
+        ::marker {
+            @apply text-green-500;
+        }
+
+        @apply list-disc my-3 pl-5;
+
+        ul {
+            @apply my-1;
+            list-style-type: circle;
+
+            ::marker {
+                @apply text-green-500;
+            }
+
+            ul {
+                @apply my-1;
+                list-style-type: lower-roman;
+
+                ::marker {
+                    @apply text-green-500;
+                }
+
+            }
+        }
+    }
+
+    pre {
+        @apply border-2 border-gray-200 rounded p-3 my-3;
+    }
+
+    blockquote {
+        @apply text-sm border-l-4 border-l-gray-200 pl-5;
+    }
+
+    img {
+        @apply rounded-2xl mx-auto my-5 shadow-2xl;
+    }
+
+    .contains-task-list {
+
+        .task-list-item {
+            @apply text-sm flex items-center my-2;
+
+            input {
+                @apply mr-3
+            }
+
+        }
+    }
+}

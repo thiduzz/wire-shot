@@ -1,0 +1,12 @@
+@import "tailwindcss/base";
+
+@import "font.css";
+@import "base.css";
+@import "content.css";
+@import "animations.css";
+/*Cookie consent UI*/
+@import "consent.css";
+
+@import "tailwindcss/components";
+
+@import "tailwindcss/utilities";

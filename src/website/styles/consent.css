@@ -1,0 +1,161 @@
+#klaro {
+    .klaro {
+        .cookie-modal {
+            @apply w-screen h-screen fixed inset-0 z-30 flex flex-col items-center justify-center px-5;
+
+            .cm-bg {
+                @apply absolute h-screen w-screen inset-0 bg-black/25 z-40;
+            }
+
+            .cm-modal {
+
+                @apply relative inset-0 bg-white max-w-md py-5 shadow-lg rounded-2xl transform duration-500 z-50;
+
+                .cm-header {
+                    @apply mb-5 px-5;
+
+                    h1 {
+                        @apply text-2xl mb-5 decoration-double decoration-green-500 underline;
+                    }
+
+                    p {
+                        @apply text-sm
+                    }
+                }
+
+                .cm-body {
+                    @apply border-y border-y-green-500 text-sm;
+
+                    .cm-purposes {
+
+                        .cm-purpose {
+                            &:first-child {
+                                @apply pt-5;
+                            }
+
+                            &:nth-child(2) {
+                                @apply pb-5;
+                            }
+
+                            @apply py-1 px-5;
+
+                            &.cm-toggle-all {
+                                @apply border-t border-green-500 py-5;
+
+                                .cm-list-description {
+                                    @apply text-xs;
+                                }
+                            }
+
+                            .cm-services {
+                                .cm-caret {
+                                    @apply mt-2;
+                                }
+                            }
+                        }
+
+                        .cm-list-input {
+                            @apply hidden;
+                        }
+
+                        .cm-list-input:checked + .cm-list-label .slider::before {
+                            @apply translate-x-5
+                        }
+
+                        input:checked + .slider::before {
+                            @apply translate-x-5
+                        }
+
+                        .cm-list-input:checked + .cm-list-label .slider {
+                            @apply bg-green-500 border-green-600;
+                        }
+
+                        .cm-list-input.half-checked:checked + .cm-list-label .slider {
+                            opacity: 0.6;
+
+                            &::before {
+                                @apply translate-x-5
+                            }
+                        }
+
+                        .cm-list-input.only-required + .cm-list-label .slider {
+                            opacity: 0.8;
+
+                            &::before {
+                                @apply translate-x-5
+                            }
+                        }
+
+                        .cm-list-label {
+                            @apply flex flex-row-reverse items-center justify-end;
+
+                            .cm-list-title {
+                                @apply ml-2;
+                            }
+
+                            .cm-switch {
+                                @apply flex flex-row;
+
+                                .slider {
+                                    @apply relative bg-gray-300 border-2 h-6 w-11 rounded-full cursor-pointer transition duration-500 inline-block rounded-full;
+
+                                    &:before {
+                                        content: '';
+                                        @apply absolute transition duration-500 bg-white rounded-full h-5 w-5;
+                                    }
+                                }
+                            }
+                        }
+
+                        .cm-content {
+                            @apply ease-in-out duration-500 transition-all overflow-y-hidden;
+                            max-height: 200px; /* approximate max height */
+                            transition-timing-function: cubic-bezier(0.5, 1, 0.5, 1);
+
+                            &.expanded {
+                                @apply max-h-0;
+                            }
+
+                            .cm-service {
+                                @apply pl-8 my-2;
+                            }
+
+                            .purposes {
+                                @apply text-xs;
+                            }
+                        }
+                    }
+                }
+
+                .cm-footer {
+                    @apply px-5 pt-5;
+
+                    .cm-footer-buttons {
+                        @apply flex flex-row items-center justify-between w-full;
+
+                        .cm-btn {
+                            @apply bg-gray-800 rounded-3xl shadow-2xl text-sm md:text-base text-white p-3;
+
+                            &.cm-btn-danger {
+                                @apply bg-gray-600
+                            }
+
+                            &.cm-btn-info {
+
+                            }
+
+                            &.cm-btn-accept-all {
+                                @apply bg-green-500;
+                            }
+                        }
+                    }
+                }
+
+                .cm-powered-by {
+                    @apply hidden;
+                }
+            }
+        }
+    }
+
+}

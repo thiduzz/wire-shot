@@ -1,0 +1,22 @@
+html,
+body {
+    font-family: "Roboto Light", -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
+    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+    @apply text-gray-800;
+}
+
+.dots{
+    @apply absolute h-20 w-32 opacity-30 -z-10;
+    background-color: #0000;
+    background-image: radial-gradient(#2C5282 1px,#0000 1px);
+    background-size: 20px 20px;
+    transform: translate(-70px,-25%);
+}
+
+.base-container {
+    @apply w-full h-screen p-0  flex flex-col;
+}
+
+.base-main {
+    @apply flex flex-col grow flex-nowrap;
+}

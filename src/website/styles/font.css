@@ -1,0 +1,52 @@
+@charset "UTF-8";
+@font-face {
+    font-family: "Bowhouse";
+    src: url("/fonts/Bowhouse-Black.woff2") format("woff2"), /* Modern browsers */
+    url("/fonts/Bowhouse-Black.woff") format("woff"), /* Legacy browsers */
+    url("/fonts/Bowhouse-Black.otf") format("truetype"); /* Android, iOS */
+    font-style: normal;
+    font-weight: 800; }
+@font-face {
+    font-family: "Bowhouse";
+    src: url("/fonts/Bowhouse-Bold.woff2") format("woff2"),
+    url("/fonts/Bowhouse-Bold.woff") format("woff"),
+    url("/fonts/Bowhouse-Bold.otf") format("truetype");
+    font-style: normal;
+    font-weight: 700; }
+@font-face {
+    font-family: "Bowhouse";
+    src: url("/fonts/Bowhouse-Regular.woff2") format("woff2"),
+    url("/fonts/Bowhouse-Regular.woff") format("woff"),
+    url("/fonts/Bowhouse-Regular.otf") format("truetype");
+    font-style: normal;
+    font-weight: 600; }
+@font-face {
+    font-family: "Bowhouse";
+    src: url("/fonts/Bowhouse-Regular.woff2") format("woff2"),
+    url("/fonts/Bowhouse-Regular.woff") format("woff"),
+    url("/fonts/Bowhouse-Regular.otf") format("truetype");
+    font-style: normal;
+    font-weight: 500; }
+@font-face {
+    font-family: "Bowhouse";
+    src: url("/fonts/Bowhouse-Regular.woff2") format("woff2"),
+    url("/fonts/Bowhouse-Regular.woff") format("woff"),
+    url("/fonts/Bowhouse-Regular.otf") format("truetype");
+    font-style: normal;
+    font-weight: 400; }
+@font-face {
+    font-family: "Bowhouse";
+    src: url("/fonts/Bowhouse-Light.woff2") format("woff2"),
+    url("/fonts/Bowhouse-Light.woff") format("woff"),
+    url("/fonts/Bowhouse-Light.otf") format("truetype");
+    font-style: normal;
+    font-weight: 300; }
+@font-face {
+    font-family: "Bowhouse";
+    src: url("/fonts/Bowhouse-Light.woff2") format("woff2"),
+    url("/fonts/Bowhouse-Light.woff") format("woff"),
+    url("/fonts/Bowhouse-Light.otf") format("truetype");
+    font-style: normal;
+    font-weight: 200; }
+body, html {
+    font-family: "Bowhouse",sans-serif; }
