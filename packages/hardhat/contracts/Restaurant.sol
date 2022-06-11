@@ -21,10 +21,12 @@ contract Restaurant {
     Counters.Counter private MENU_ITEM_IDS;
     Counters.Counter private TABLE_IDS;
 
+    event test_log(uint value1);
+
     struct MenuItem {
         uint256 id;
         string name;
-        uint256 price;
+        uint price;
     }
 
     struct TableReference {
@@ -59,7 +61,16 @@ contract Restaurant {
         return true;
     }
 
-    function addTable(string memory _name) public IsOwner returns (bool success) {
+    function _calculatePrice(uint256[] memory _orderItemIds) public view returns (uint) {
+        uint price = 0;
+        for (uint i=0; i < _orderItemIds.length; i++) {
+               price = menu[_orderItemIds[i]].price + price;
+               
+        }
+        return price;
+    }
+
+    function _addTable(string memory _name) public IsOwner returns (bool success) {
         uint256 currentId = TABLE_IDS.current();
         Table table = new Table(
             address(this),
@@ -74,5 +85,9 @@ contract Restaurant {
         );
         TABLE_IDS.increment();
         return true;
+    }
+
+    function _getAddress() public view returns (address) {
+        return address(this);
     }
 }
