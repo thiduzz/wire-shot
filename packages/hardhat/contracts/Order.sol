@@ -18,10 +18,13 @@ contract Order {
         Closed
     }
 
+    event PaidOrder(uint256 price, uint256[] orderItems);
+
     Restaurant private restaurant;
+    uint256 msgValue;
     Table private table;
     uint256 private id;
-    address private tableAddress;
+    address payable private tableAddress;
     address private customerAddress;
     uint256[] private orderItems;
     OrderStatus private status;
@@ -52,14 +55,16 @@ contract Order {
         _;
     }
 
-    constructor(address _restaurantAddress, address _customerAddress, uint256 _id) {
-        restaurant = Restaurant(_restaurantAddress);
-        tableAddress = msg.sender;
+    constructor(address _restaurantAddress, address _customerAddress, uint256 _id) payable {
+        restaurant = Restaurant(payable(_restaurantAddress));
+        tableAddress = payable(msg.sender);
         table = Table(payable(msg.sender));
         customerAddress = _customerAddress;
         id = _id;
         status = OrderStatus.Open;
     }
+
+    fallback() external payable {}
 
     function _addItem(uint256[] memory _orderIds) public returns (bool success){
         if(_orderIds.length > 0) {
@@ -82,13 +87,26 @@ contract Order {
         return price;
     }
 
-    function _closeOrder(uint256 _price, uint256[] memory _orderItems) IsTable() external {
-        status = OrderStatus.Closed;
-        emit ClosedOrder(address(this), _orderItems,_price);
+    /* Not sure if we need to wait until payment is confirmed?  */
+    function _payAndCloseOrder() payable public {
+        uint256 price = restaurant._calculatePrice(orderItems);
+        require(msg.value >= price, "Your value does not cover the price");
+        _closeOrder(price);
+        _transferFundsToTable();
+        table._setTableAsFree();
     }
 
-    function _payAndCheckout() payable public {
-        table._collectMoneyAndRelease(address(this), orderItems);
+    function _transferFundsToTable() internal {
+        tableAddress.transfer(address(this).balance);
+    }
+
+    function _closeOrder(uint256 _price) internal {
+        status = OrderStatus.Closed;
+        emit ClosedOrder(address(this), orderItems, _price);
+    }
+
+    function _getBalanceOrder() public view returns (uint256) {
+        return address(this).balance;
     }
 
     function _getCustomerAddress() public view returns (address) {
@@ -98,5 +116,4 @@ contract Order {
     function _getOrderAddress() public view returns (address) {
         return address(this);
     }
-
 }

@@ -16,12 +16,11 @@ contract Restaurant {
 
     string public name;
     address public owner;
+    uint256 public msgValue;
     mapping(string => TableReference) public tables;
     mapping(uint256 => MenuItem) public menu;
     Counters.Counter private MENU_ITEM_IDS;
     Counters.Counter private TABLE_IDS;
-
-    event test_log(uint value1);
 
     struct MenuItem {
         uint256 id;
@@ -35,7 +34,7 @@ contract Restaurant {
         uint256 id;
     }
 
-    constructor(address _owner, string memory _name) {
+    constructor(address _owner, string memory _name) payable {
         owner = _owner;
         name = _name;
         MENU_ITEM_IDS.increment();
@@ -64,7 +63,7 @@ contract Restaurant {
     function _calculatePrice(uint256[] memory _orderItemIds) public view returns (uint) {
         uint price = 0;
         for (uint i=0; i < _orderItemIds.length; i++) {
-               price = menu[_orderItemIds[i]].price + price;
+               price += menu[_orderItemIds[i]].price;
                
         }
         return price;
@@ -85,6 +84,11 @@ contract Restaurant {
         );
         TABLE_IDS.increment();
         return true;
+    }
+
+    /* Adjust this function to collect all money from all tables  */
+    function deposit() payable public {
+        // nothing else to do!
     }
 
     function _getAddress() public view returns (address) {
