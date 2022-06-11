@@ -44,15 +44,12 @@ const TopBarMenu = ({menu: menuProp}: TopBarProps) => {
         </Link>
     ]
     let menu: ReactNode[] = [
-        <Link key="1" href='/src/website/pages' passHref>
+        <Link key="1" href='/' passHref>
             <div className="cursor-pointer hover:text-green-500 hover:scale-125  duration-150">Home</div>
         </Link>,
-        <Link key="2" href='/src/website/pages' passHref>
+        <Link key="2" href='/' passHref>
             <div className="cursor-pointer hover:text-green-500 hover:scale-125  duration-150">Features</div>
         </Link>,
-        <Link key="3" href='/src/website/pages' passHref>
-            <div className="cursor-pointer hover:text-green-500 hover:scale-125  duration-150">About</div>
-        </Link>
     ]
     if (menuProp) {
         menu = menuProp.override ? menuProp.items : [...menu, ...menuProp.items]

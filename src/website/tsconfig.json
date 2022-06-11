@@ -23,7 +23,8 @@
       "@styles/*": ["styles/*"],
       "@libs/*": ["libs/*"],
       "@hooks/*": ["hooks/*"],
-      "@local-types/*": ["types/*"]
+      "@local-types/*": ["types/*"],
+      "@context/*": ["context/*"]
     }
   },
   "include": [

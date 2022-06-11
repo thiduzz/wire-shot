@@ -12,7 +12,7 @@ const TopBar = ({ navigation: navigationProp, menu: menuProp }: TopBarProps) => 
     }
     return <header className='bg-white py-4 fixed w-full z-10'>
         <div className="px-5 md:p-0 md:container md:mx-auto">
-            <div className='flex justify-between gap-x-2.5'>
+            <div className='flex justify-between items-center gap-x-2.5'>
                 <nav>
                     {navigation.map(item => item)}
                 </nav>
