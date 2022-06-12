@@ -39,6 +39,7 @@ const RestaurantIndex: NextPage = () => {
 
     const handleCreateRestaurant = useCallback(async () => {
         if(newRestaurantName.length <= 0){
+            debugger
             return
         }
         const provider = getProvider()
@@ -53,11 +54,15 @@ const RestaurantIndex: NextPage = () => {
                 console.log(e)
             }
         }
-    }, [])
+    }, [newRestaurantName])
 
     useEffect(() => {
         handleLoadRestaurants()
     }, [handleLoadRestaurants])
+
+    const handleChangeName = useCallback((e) => {
+        setNewRestaurantName(e.target.value)
+    },[])
 
     return (
         <Layout>
@@ -74,7 +79,7 @@ const RestaurantIndex: NextPage = () => {
                         </Link>)}
                     </div>}
                     <div className="mt-10 flex flex-row items-center gap-x-3.5">
-                        <input type="text" value={newRestaurantName} onChange={(e) => setNewRestaurantName(e.target.value)} className="w-64 border border-gray-300 rounded-lg focus:active:border-purple-400 px-3 py-3 active:border-purple-400"/>
+                        <input type="text" value={newRestaurantName} onChange={handleChangeName} className="w-64 border border-gray-300 rounded-lg focus:active:border-purple-400 px-3 py-3 active:border-purple-400"/>
                         <button className="bg-purple-400 text-white p-5 rounded-lg" onClick={handleCreateRestaurant}>Create
                             restaurant
                         </button>
