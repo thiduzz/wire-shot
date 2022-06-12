@@ -69,7 +69,7 @@ const RestaurantIndex: NextPage = () => {
             <Head title="Wireshot - Restaurant" description="Your Restaurant Payment solution"/>
             <div className="page-content justify-center">
                 <div className="hero flex flex-col items-center justify-center">
-                    {restaurants.length > 0 && <div className="flex flex-row flex-wrap justify-start gap-x-3.5">
+                    {restaurants.length > 0 && <div className="flex flex-row flex-wrap justify-start gap-3.5">
                         {restaurants.map((restaurant) => <Link key={restaurant.address}
                                                                href={"/restaurant/" + restaurant.address} passHref>
                             <div className="cursor-pointer hover:scale-125 transition-transform bg-white h-48 w-48 shadow-lg border-purple-400 border rounded-lg flex flex-col items-center justify-center">

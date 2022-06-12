@@ -30,7 +30,6 @@ export const ProfileProvider = ({children}: { children?: ReactNode }) => {
     const [profile, setProfile] = useState<IProfile | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const {connectWallet, loadAlreadyAuthorizedWallet} = useEthers()
-    const router = useRouter()
 
     const handleUpdateAccount = useCallback(async (account) => {
 
