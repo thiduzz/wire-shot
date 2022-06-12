@@ -49,7 +49,7 @@ contract Order {
 
     modifier IsRestaurant(){
         require(
-            msg.sender == restaurant._getAddress(),
+            msg.sender == restaurant.getAddress(),
             "Only restaurant or customer can access the order."
         );
         _;
