@@ -16,10 +16,9 @@ contract Restaurant {
 
     string public name;
     address public owner;
-    address[] public tables;
+    address[] private tableAddresses;
     TableReference[] public tableList;
-    mapping(address => TableReference) public freeTablesDetails;
-    mapping(uint256 => MenuItem) public menu;
+    mapping(uint256 => MenuItem) private menu;
     Counters.Counter private MENU_ITEM_IDS;
     Counters.Counter private TABLE_IDS;
 
@@ -50,7 +49,11 @@ contract Restaurant {
         _;
     }
 
-    function addItem(string memory _name, uint256 _price) public IsOwner returns (bool success) {
+    fallback() external payable {}
+    function deposit() payable public {
+    }
+
+    function addMenuItem(string memory _name, uint256 _price) public IsOwner returns (bool success) {
         uint256 currentId = MENU_ITEM_IDS.current();
         menu[currentId] = MenuItem(
             currentId,
@@ -61,7 +64,7 @@ contract Restaurant {
         return true;
     }
 
-    function _calculatePrice(uint256[] memory _orderItemIds) public view returns (uint) {
+    function calculatePrice(uint256[] memory _orderItemIds) public view returns (uint) {
         uint price = 0;
         for (uint i=0; i < _orderItemIds.length; i++) {
                price += menu[_orderItemIds[i]].price;
@@ -69,20 +72,19 @@ contract Restaurant {
         return price;
     }
 
-    function _addTable(string memory _name) public IsOwner returns (bool success) {
+    function addTable(string memory _name) public IsOwner returns (bool success) {
         uint256 currentId = TABLE_IDS.current();
         Table table = new Table(
+            owner,
             address(this),
             currentId,
             _name
         );
-        address tableAddress = table._getTableAddress();
-        tables.push(tableAddress);
-        tableList.push(TableReference(_name, tableAddress, Table.TableStatus.Free));
+        tableAddresses.push(address(table));
+        tableList.push(TableReference(_name, address(table), Table.TableStatus.Free));
         TABLE_IDS.increment();
         return true;
     }
-
 
     function updateTableList(uint256 _id, Table.TableStatus _status) external {
         uint index = _id - 1; 
@@ -98,20 +100,23 @@ contract Restaurant {
         return freeTables;
     }
 
-    /* Adjust this function to collect all money from all tables  */
-    function deposit() payable public {
-        // nothing else to do!
-    }
-
     function getAddress() public view returns (address) {
         return address(this);
     }
 
+    function getBalance() public IsOwner view returns (uint256) {
+        return address(this).balance;
+    }
+
+    function getMenuItem(uint256 _id) public view returns (uint256 itemId,  string memory itemName,  uint256 itemPrice) {
+        require(_id < MENU_ITEM_IDS.current(), "There is no item for this id");
+        return (menu[_id].id, menu[_id].name, menu[_id].price);
+    }
+
     function getAllTableAddresses() public view returns (address[] memory values) {
-        require(tables.length > 0, "No tables created yet");
-        values = new address[](tables.length);
-        for (uint256 i = 0; i < tables.length; i++) {
-            values[i] = tables[i];
+        values = new address[](tableAddresses.length);
+        for (uint256 i = 0; i < tableAddresses.length; i++) {
+            values[i] = tableAddresses[i];
         }
         return values;
     }

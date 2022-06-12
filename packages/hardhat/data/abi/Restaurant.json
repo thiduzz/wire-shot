@@ -16,6 +16,34 @@
     "type": "constructor"
   },
   {
+    "stateMutability": "payable",
+    "type": "fallback"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "_name",
+        "type": "string"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_price",
+        "type": "uint256"
+      }
+    ],
+    "name": "addMenuItem",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "success",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "string",
@@ -23,7 +51,7 @@
         "type": "string"
       }
     ],
-    "name": "_addTable",
+    "name": "addTable",
     "outputs": [
       {
         "internalType": "bool",
@@ -42,7 +70,7 @@
         "type": "uint256[]"
       }
     ],
-    "name": "_calculatePrice",
+    "name": "calculatePrice",
     "outputs": [
       {
         "internalType": "uint256",
@@ -51,30 +79,6 @@
       }
     ],
     "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "string",
-        "name": "_name",
-        "type": "string"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_price",
-        "type": "uint256"
-      }
-    ],
-    "name": "addItem",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "success",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -82,35 +86,6 @@
     "name": "deposit",
     "outputs": [],
     "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "name": "freeTablesDetails",
-    "outputs": [
-      {
-        "internalType": "string",
-        "name": "name",
-        "type": "string"
-      },
-      {
-        "internalType": "address",
-        "name": "tableAddress",
-        "type": "address"
-      },
-      {
-        "internalType": "enum Table.TableStatus",
-        "name": "status",
-        "type": "uint8"
-      }
-    ],
-    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -141,7 +116,7 @@
   },
   {
     "inputs": [],
-    "name": "getNumberOfFreeTables",
+    "name": "getBalance",
     "outputs": [
       {
         "internalType": "uint256",
@@ -156,25 +131,38 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "",
+        "name": "_id",
         "type": "uint256"
       }
     ],
-    "name": "menu",
+    "name": "getMenuItem",
     "outputs": [
       {
         "internalType": "uint256",
-        "name": "id",
+        "name": "itemId",
         "type": "uint256"
       },
       {
         "internalType": "string",
-        "name": "name",
+        "name": "itemName",
         "type": "string"
       },
       {
         "internalType": "uint256",
-        "name": "price",
+        "name": "itemPrice",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getNumberOfFreeTables",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
         "type": "uint256"
       }
     ],
@@ -231,25 +219,6 @@
         "internalType": "enum Table.TableStatus",
         "name": "status",
         "type": "uint8"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "name": "tables",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
       }
     ],
     "stateMutability": "view",
