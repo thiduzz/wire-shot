@@ -77,25 +77,12 @@
   },
   {
     "inputs": [],
-    "name": "_getAddress",
+    "name": "_getTableAddress",
     "outputs": [
       {
         "internalType": "address",
         "name": "",
         "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "_getBalanceTable",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -110,7 +97,7 @@
   },
   {
     "inputs": [],
-    "name": "currentOrder",
+    "name": "currentOrderAddress",
     "outputs": [
       {
         "internalType": "address",
@@ -123,21 +110,18 @@
   },
   {
     "inputs": [],
-    "name": "id",
+    "name": "getDetails",
     "outputs": [
       {
         "internalType": "uint256",
         "name": "",
         "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "name",
-    "outputs": [
+      },
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      },
       {
         "internalType": "string",
         "name": "",
@@ -168,19 +152,6 @@
         "internalType": "address",
         "name": "",
         "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "status",
-    "outputs": [
-      {
-        "internalType": "enum Table.TableStatus",
-        "name": "",
-        "type": "uint8"
       }
     ],
     "stateMutability": "view",

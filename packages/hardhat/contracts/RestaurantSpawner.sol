@@ -16,14 +16,18 @@ contract RestaurantSpawner {
 
     constructor() {}
 
+
+    event RestaurantCreated(address restaurantAddress, string name);
+
     function addRestaurant(string memory _name) public returns (address) {
         Restaurant restaurant = new Restaurant(
             msg.sender,
             _name
         );
-        address restaurantAddress = restaurant._getAddress();
+        address restaurantAddress = restaurant.getAddress();
         restaurants[msg.sender].push(restaurantAddress);
         restaurantList.push(restaurantAddress);
+        emit RestaurantCreated(restaurantAddress, _name);
         return restaurantAddress;
     }
 
@@ -46,7 +50,7 @@ contract RestaurantSpawner {
         return restaurants[_owner];
     }
 
-    function _getAddress() public view returns (address) {
+    function getAddress() public view returns (address) {
         return address(this);
     }
 }

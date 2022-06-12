@@ -35,8 +35,8 @@ contract Restaurant {
         Table.TableStatus status;
     }
 
-    constructor(string memory _name) payable {
-        owner = msg.sender;
+    constructor(address _owner, string memory _name) payable {
+        owner = _owner;
         name = _name;
         MENU_ITEM_IDS.increment();
         TABLE_IDS.increment();
@@ -76,7 +76,7 @@ contract Restaurant {
             currentId,
             _name
         );
-        address tableAddress = table._getAddress();
+        address tableAddress = table._getTableAddress();
         tables.push(tableAddress);
         tableList.push(TableReference(_name, tableAddress, Table.TableStatus.Free));
         TABLE_IDS.increment();
