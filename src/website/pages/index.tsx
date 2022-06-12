@@ -2,7 +2,6 @@ import type {NextPage} from 'next'
 import Layout from "@components/Layout";
 import React, {useCallback, useEffect, useState} from "react";
 import Head from "@components/Head";
-import {useEthers} from "@hooks/useEthers";
 import {IoRestaurantOutline, IoQrCodeOutline, IoPencil} from "react-icons/io5"
 import {useRouter} from "next/router";
 import Link from "next/link";
@@ -11,26 +10,21 @@ import {useProfile} from "@context/profile";
 
 const Home: NextPage = () => {
     const [currentProfileAddress, setCurrentProfileAddress] = useState<string | null>(null)
-    const { profile, connectWallet, disconnectWallet, loadWallet } = useProfile()
-    const router = useRouter()
+    const { profile, connectWallet } = useProfile()
 
     const handleConnectWallet = useCallback(async () => {
         await connectWallet()
     },[ connectWallet ])
 
-    const handleDisconnectWallet = useCallback(async () => {
-        await disconnectWallet()
-    },[disconnectWallet])
 
     useEffect(() => {
 
-        loadWallet()
         if(profile){
             setCurrentProfileAddress(profile.address)
             return
         }
         setCurrentProfileAddress(null)
-    }, [profile, loadWallet])
+    }, [profile?.address])
 
 
 

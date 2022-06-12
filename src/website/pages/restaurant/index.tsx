@@ -10,8 +10,6 @@ import RestaurantAbi from "@wireshot/hardhat/artifacts/contracts/Restaurant.sol/
 import Link from "next/link";
 import {IoHomeOutline} from "react-icons/io5";
 
-
-
 const RestaurantIndex: NextPage = () => {
     const {profile} = useProfile()
 
@@ -27,7 +25,7 @@ const RestaurantIndex: NextPage = () => {
             const spawnerContract = new ethers.Contract(spawnerAddress, RestaurantSpawnerAbi.abi, provider.getSigner());
             const result = await spawnerContract.getRestaurants(profile?.address)
             if (result) {
-                debugger
+
                 const arr: Array<any> = []
                 for (const index in result) {
                     const restaurantContract = new ethers.Contract(result[index], RestaurantAbi.abi, provider.getSigner());

@@ -1,12 +1,14 @@
 import {createContext, ReactNode, useCallback, useContext, useEffect, useState, useMemo} from 'react';
 import {IProfile} from "@local-types/profile";
 import {useEthers} from "@hooks/useEthers";
+import {useRouter} from "next/router";
+import {debug} from "util";
 
 interface IProfileContext {
+    loading: boolean
     profile: IProfile | null
     updateProfile: (profile: IProfile) => void
     connectWallet: () => void
-    disconnectWallet: () => void
     loadWallet: () => void
 }
 
@@ -17,22 +19,30 @@ const throwMissingProvider: () => void = () => {
 const initialState: IProfileContext = {
     updateProfile: throwMissingProvider,
     connectWallet: throwMissingProvider,
-    disconnectWallet: throwMissingProvider,
     loadWallet: throwMissingProvider,
     profile: null,
+    loading: true,
 }
 
 export const ProfileContext = createContext<IProfileContext>(initialState);
 
 export const ProfileProvider = ({children}: { children?: ReactNode }) => {
     const [profile, setProfile] = useState<IProfile | null>(null);
+    const [loading, setLoading] = useState<boolean>(true);
     const {connectWallet, loadAlreadyAuthorizedWallet, disconnectWallet} = useEthers()
+    const router = useRouter()
 
-    const handleUpdateAccount = useCallback(async (account: string) => {
-        if (profile) {
-            setProfile({address: account, name: profile.name})
-        } else {
-            setProfile({address: account, name: ''})
+    const handleUpdateAccount = useCallback(async (account) => {
+
+        if(account.length <= 0){
+            setProfile(null)
+            sessionStorage.removeItem("wireshot_account")
+        }else{
+            if (profile) {
+                setProfile({address: account, name: profile.name})
+            } else {
+                setProfile({address: account, name: ''})
+            }
         }
     }, [])
 
@@ -42,7 +52,6 @@ export const ProfileProvider = ({children}: { children?: ReactNode }) => {
 
     const handleConnectWallet = useCallback(async () => {
         try {
-
             const account = await connectWallet()
             if (account) {
                 setProfile({address: account, name: ''})
@@ -55,20 +64,19 @@ export const ProfileProvider = ({children}: { children?: ReactNode }) => {
         }
     }, [connectWallet])
 
-    const handleDisconnectWallet = useCallback(async () => {
-        await disconnectWallet()
-        setProfile(null)
-    }, [disconnectWallet])
 
 
     const handleLoadExistingWallet = useCallback(async () => {
-        debugger;
-        const account = sessionStorage.getItem("wireshot_account")
-        if (account) {
-            const verifiedAccount = await loadAlreadyAuthorizedWallet([account], true)
-            setProfile({address: verifiedAccount, name: ''})
+        if(loading){
+
+            const account = sessionStorage.getItem("wireshot_account")
+            if (account) {
+                const verifiedAccount = await loadAlreadyAuthorizedWallet([account], true)
+                setProfile({address: verifiedAccount, name: ''})
+            }
+            setLoading(false)
         }
-    }, [loadAlreadyAuthorizedWallet])
+    }, [loading])
 
     useEffect(() => {
         const {ethereum} = window as any;
@@ -76,12 +84,9 @@ export const ProfileProvider = ({children}: { children?: ReactNode }) => {
             return;
         }
         window.ethereum.on('accountsChanged', handleUpdateAccount);
-        window.ethereum.on('disconnect', handleDisconnectWallet);
 
         return () => {
-
             window.ethereum.removeListener('accountsChanged', handleUpdateAccount);
-            window.ethereum.removeListener('disconnect', handleDisconnectWallet);
         }
     }, [])
 
@@ -89,13 +94,13 @@ export const ProfileProvider = ({children}: { children?: ReactNode }) => {
         () => {
             return {
                 profile,
+                loading,
                 updateProfile: handleUpdateProfile,
                 connectWallet: handleConnectWallet,
-                disconnectWallet: handleDisconnectWallet,
                 loadWallet: handleLoadExistingWallet
             }
         },
-        [profile, handleUpdateProfile, handleConnectWallet, handleDisconnectWallet, handleLoadExistingWallet],
+        [profile, handleUpdateProfile, handleConnectWallet, handleLoadExistingWallet],
     )
 
     return <ProfileContext.Provider value={state}>{children}</ProfileContext.Provider>
