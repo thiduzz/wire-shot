@@ -1,5 +1,4 @@
 import {ethers} from "ethers";
-import {useEffect} from "react";
 
 export const useEthers = () => {
 
@@ -40,24 +39,6 @@ export const useEthers = () => {
         }
         //TODO: do something here
     };
-
-    // const getConnectedWallet = async (): Promise<string | null> => {
-    //     try {
-    //         const provider  = getProvider()
-    //         if(!provider){
-    //             throw Error("failed to retrieve provider")
-    //         }
-    //         // Check if we are authorized to access the user's wallet
-    //         const accounts = await provider.send("eth_accounts",[]);
-    //         if (accounts.length !== 0) {
-    //             return loadAlreadyAuthorizedWallet(accounts)
-    //         }
-    //         return null;
-    //     } catch (error) {
-    //         console.log(error);
-    //         return null;
-    //     }
-    // };
 
     const loadAlreadyAuthorizedWallet = async (accounts, checkAuthorization = false) => {
         const account = accounts[0];

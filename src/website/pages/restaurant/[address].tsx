@@ -95,7 +95,7 @@ const Restaurant: NextPage = () => {
         console.log(e);
       }
     }
-  }, []);
+  }, [tableName]);
 
   useEffect(() => {
     loadAndSetContract();
