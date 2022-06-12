@@ -17,12 +17,12 @@ contract Table {
 
     Counters.Counter private ORDER_IDS;
 
-    uint256 public id;
-    string public name;
-    TableStatus public status;
+    uint256 private id;
+    string private name;
+    TableStatus private status;
     Restaurant public restaurant;
     address public restaurantAddress;
-    address public currentOrder;
+    address public currentOrderAddress;
     address[] private ORDER_HISTORY;
     event NotEnoughFund(uint256 amount, uint256 price);
     event test_value(uint256 price, uint256 value);
@@ -46,24 +46,41 @@ contract Table {
             msg.sender, 
             currentId
         );
-        currentOrder = order._getOrderAddress();
-        ORDER_HISTORY.push(currentOrder);
+        currentOrderAddress = order._getOrderAddress();
+        ORDER_HISTORY.push(currentOrderAddress);
         ORDER_IDS.increment();
+        _setTableAsBusy();
         return true;
         } else {
             return false;
         }
     }
 
+
+    function _setTableAsBusy() internal {
+        status = TableStatus.Busy;
+        restaurant.updateTableList(id, TableStatus.Busy);
+    }
+
+    /* Need to check if its current order */
     function _setTableAsFree() external {
         status = TableStatus.Free;
+        restaurant.updateTableList(id, TableStatus.Free);
     }
 
-    function _getBalanceTable() public view returns (uint256) {
-        return address(this).balance;
-    }
-
-    function _getAddress() public view returns (address) {
+    function _getTableAddress() public view returns (address) {
         return address(this);
     }
+
+    function getDetails() public view returns (uint256,  string memory,  string memory){
+        string memory tableStatus = "Free";
+        if(status == TableStatus.Busy) {
+            tableStatus = "Busy";
+        } else if (status == TableStatus.Closed){
+            tableStatus = "Closed";
+        }
+        return (id, name, tableStatus);
+    }
+
+
 }
