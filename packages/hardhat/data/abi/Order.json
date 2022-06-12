@@ -2,7 +2,7 @@
   {
     "inputs": [
       {
-        "internalType": "address",
+        "internalType": "address payable",
         "name": "_restaurantAddress",
         "type": "address"
       },
@@ -76,7 +76,7 @@
         "type": "uint256[]"
       }
     ],
-    "name": "_addItem",
+    "name": "addMenuItem",
     "outputs": [
       {
         "internalType": "bool",
@@ -89,7 +89,7 @@
   },
   {
     "inputs": [],
-    "name": "_calculatePrice",
+    "name": "calculatePrice",
     "outputs": [
       {
         "internalType": "uint256",
@@ -102,46 +102,7 @@
   },
   {
     "inputs": [],
-    "name": "_getBalanceOrder",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "_getCustomerAddress",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "_getOrderAddress",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "_getOrderItems",
+    "name": "getOrderItems",
     "outputs": [
       {
         "internalType": "uint256[]",
@@ -154,9 +115,22 @@
   },
   {
     "inputs": [],
-    "name": "_payAndCloseOrder",
+    "name": "payOrder",
     "outputs": [],
     "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "restaurant",
+    "outputs": [
+      {
+        "internalType": "contract Restaurant",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   }
 ]

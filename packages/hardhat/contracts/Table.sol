@@ -112,7 +112,8 @@ contract Table {
         } else if (status == TableStatus.Closed){
             tableStatus = "Closed";
         }
-        return (id, name, tableStatus);
+        string memory tableName = name;
+        return (id, tableName, tableStatus);
     }
 
 

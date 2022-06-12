@@ -114,7 +114,6 @@ contract Restaurant {
     }
 
     function getAllTableAddresses() public view returns (address[] memory values) {
-        require(tableAddresses.length > 0, "No tables created yet");
         values = new address[](tableAddresses.length);
         for (uint256 i = 0; i < tableAddresses.length; i++) {
             values[i] = tableAddresses[i];
