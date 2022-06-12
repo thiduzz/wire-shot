@@ -7,7 +7,6 @@ import {ProfileProvider, useProfile} from "@context/profile";
 
 function MyApp({ Component, pageProps }: AppProps) {
   const {klaro} = useConsent()
-  const { loadWallet } = useProfile()
   useEffect(() => {
     TagManager.initialize({
       gtmId: process.env.NEXT_PUBLIC_GOOGLE_TAG_MANAGER_ID,

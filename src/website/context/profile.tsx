@@ -44,9 +44,9 @@ export const ProfileProvider = ({children}: { children?: ReactNode }) => {
         try {
 
             const account = await connectWallet()
-            debugger;
             if (account) {
                 setProfile({address: account, name: ''})
+                sessionStorage.setItem("wireshot_account", account)
                 return
             }
             setProfile(null)
@@ -62,7 +62,8 @@ export const ProfileProvider = ({children}: { children?: ReactNode }) => {
 
 
     const handleLoadExistingWallet = useCallback(async () => {
-        const account = localStorage.getItem("wireshot_account")
+        debugger;
+        const account = sessionStorage.getItem("wireshot_account")
         if (account) {
             const verifiedAccount = await loadAlreadyAuthorizedWallet([account], true)
             setProfile({address: verifiedAccount, name: ''})
