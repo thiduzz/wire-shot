@@ -1,35 +1,31 @@
-import type { NextPage } from "next";
-import Layout from "@components/Layout";
-import React, { useCallback, useEffect, useState } from "react";
 import Head from "@components/Head";
+import Layout from "@components/Layout";
 import { useEthers } from "@hooks/useEthers";
-import { BaseContract, ethers } from "ethers";
+import { ETableStatus, ITable, STATUSMAPPING } from "@local-types/table";
 import RestaurantAbi from "@wireshot/hardhat/artifacts/contracts/Restaurant.sol/Restaurant.json";
 import TableAbi from "@wireshot/hardhat/artifacts/contracts/Table.sol/Table.json";
-import { IoEllipseOutline } from "react-icons/io5";
+import { table } from "console";
+import { ethers } from "ethers";
+import type { NextPage } from "next";
 import { useRouter } from "next/router";
-
-enum TableStatus {
-  Busy,
-  Free,
-  Closed,
-}
-
-interface ITable {
-  id: number;
-  name: string;
-  address: string;
-  status: TableStatus;
-}
+import React, { useCallback, useEffect, useState } from "react";
+import { IoEllipseOutline } from "react-icons/io5";
 
 interface IRestaurant {
   name: string;
   tables: Array<ITable>;
 }
 
+const style: {
+  [key in ETableStatus]: string;
+} = {
+  [ETableStatus.Free]: "text-green-400",
+  [ETableStatus.Busy]: "text-orange-400",
+  [ETableStatus.Closed]: "text-red-400",
+};
+
 const Restaurant: NextPage = () => {
   const router = useRouter();
-
   const [restaurant, setRestaurant] = useState<IRestaurant | null>(null);
   const [tableName, setTableName] = useState<string>("");
   const [restaurantContract, setRestaurantContract] =
@@ -78,8 +74,6 @@ const Restaurant: NextPage = () => {
     tableAddresses: string[]
   ): Promise<ITable[]> => {
     const tableCollection: ITable[] = [];
-    console.log("all table addresses", tableAddresses);
-    console.log("Proise in the making");
     return Promise.all(
       tableAddresses.map((item: string): Promise<ITable> => {
         return retrieveTableInfo(provider, item);
@@ -92,6 +86,7 @@ const Restaurant: NextPage = () => {
         return tableCollection;
       })
       .catch((err: any) => {
+        console.log("Error while getting table details", err);
         return tableCollection;
       });
   };
@@ -106,7 +101,6 @@ const Restaurant: NextPage = () => {
       provider.getSigner()
     );
     const tableDetails = await tableContract.getDetails();
-    console.log("table details", tableDetails[1]);
     return {
       id: tableDetails[0].toNumber(),
       name: tableDetails[1],
@@ -142,27 +136,25 @@ const Restaurant: NextPage = () => {
             <div>
               <h1>Restaurant: {restaurant.name}</h1>
               {restaurant.tables.length > 0 && (
-                <div className="flex flex-row flex-wrap justify-start">
+                <div className="flex flex-row flex-wrap justify-start my-4 gap-4">
                   {restaurant.tables.map((table) => (
-                    <div className="cursor-pointer hover:scale-125 transition-transform bg-white h-48 w-48 shadow-lg border-purple-400 border rounded-lg flex flex-col items-center justify-center">
-                      {table.status == TableStatus.Free && (
-                        <IoEllipseOutline
-                          size={50}
-                          className="text-purple-400 mb-5"
-                        />
-                      )}
-                      {table.status == TableStatus.Busy && (
-                        <IoEllipseOutline
-                          size={50}
-                          className="text-red-400 mb-5"
-                        />
-                      )}
-                      {table.status == TableStatus.Closed && (
-                        <IoEllipseOutline
-                          size={50}
-                          className="text-green-400 mb-5"
-                        />
-                      )}
+                    <div
+                      key={table.name}
+                      className={`${
+                        style[table.status]
+                      } relative cursor-pointer hover:scale-125 transition-transform bg-white h-48 w-48 shadow-lg border rounded-lg flex flex-col items-center justify-center`}
+                    >
+                      <div
+                        className={`${
+                          style[table.status]
+                        } absolute top-2 right-3 text-sm`}
+                      >
+                        {STATUSMAPPING[table.status]}
+                      </div>
+                      <IoEllipseOutline
+                        size={50}
+                        className={`${style[table.status]} mb-5`}
+                      />
                       {table.name}
                     </div>
                   ))}
