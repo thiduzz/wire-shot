@@ -10,7 +10,9 @@ import "./Restaurant.sol";
  */
 contract RestaurantSpawner {
 
+    address[] private restaurantList;
     mapping(address => address[]) public restaurants;
+
 
     constructor() {}
 
@@ -21,7 +23,23 @@ contract RestaurantSpawner {
         );
         address restaurantAddress = restaurant._getAddress();
         restaurants[msg.sender].push(restaurantAddress);
+        restaurantList.push(restaurantAddress);
         return restaurantAddress;
+    }
+
+    function paginateRestaurants(uint256 cursor, uint256 howMany) public view returns (address[] memory values, uint256 newCursor)
+    {
+        uint256 length = howMany;
+        if (length > restaurantList.length - cursor) {
+            length = restaurantList.length - cursor;
+        }
+
+        values = new address[](length);
+        for (uint256 i = 0; i < length; i++) {
+            values[i] = restaurantList[cursor + i];
+        }
+
+        return (values, cursor + length);
     }
 
     function getRestaurants(address _owner) external view returns (address[] memory ownerRestaurants) {

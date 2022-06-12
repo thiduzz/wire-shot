@@ -40,6 +40,25 @@
     "type": "event"
   },
   {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "price",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "value",
+        "type": "uint256"
+      }
+    ],
+    "name": "test_value",
+    "type": "event"
+  },
+  {
     "stateMutability": "payable",
     "type": "fallback"
   },
@@ -57,24 +76,6 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_orderAddress",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256[]",
-        "name": "_orderItems",
-        "type": "uint256[]"
-      }
-    ],
-    "name": "_collectMoneyAndRelease",
-    "outputs": [],
-    "stateMutability": "payable",
-    "type": "function"
-  },
-  {
     "inputs": [],
     "name": "_getAddress",
     "outputs": [
@@ -89,7 +90,7 @@
   },
   {
     "inputs": [],
-    "name": "_getBalance",
+    "name": "_getBalanceTable",
     "outputs": [
       {
         "internalType": "uint256",
@@ -101,22 +102,10 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "_receive",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "success",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "payable",
+    "inputs": [],
+    "name": "_setTableAsFree",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {

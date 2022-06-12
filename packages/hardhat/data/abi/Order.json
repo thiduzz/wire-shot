@@ -17,7 +17,7 @@
         "type": "uint256"
       }
     ],
-    "stateMutability": "nonpayable",
+    "stateMutability": "payable",
     "type": "constructor"
   },
   {
@@ -44,6 +44,29 @@
     ],
     "name": "ClosedOrder",
     "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "price",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256[]",
+        "name": "orderItems",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "PaidOrder",
+    "type": "event"
+  },
+  {
+    "stateMutability": "payable",
+    "type": "fallback"
   },
   {
     "inputs": [
@@ -78,21 +101,16 @@
     "type": "function"
   },
   {
-    "inputs": [
+    "inputs": [],
+    "name": "_getBalanceOrder",
+    "outputs": [
       {
         "internalType": "uint256",
-        "name": "_price",
+        "name": "",
         "type": "uint256"
-      },
-      {
-        "internalType": "uint256[]",
-        "name": "_orderItems",
-        "type": "uint256[]"
       }
     ],
-    "name": "_closeOrder",
-    "outputs": [],
-    "stateMutability": "nonpayable",
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -136,7 +154,7 @@
   },
   {
     "inputs": [],
-    "name": "_payAndCheckout",
+    "name": "_payAndCloseOrder",
     "outputs": [],
     "stateMutability": "payable",
     "type": "function"
