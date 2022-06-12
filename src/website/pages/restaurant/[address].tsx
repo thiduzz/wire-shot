@@ -16,6 +16,7 @@ enum TableStatus {
 }
 
 interface ITable {
+  id: number;
   name: string;
   address: string;
   status: TableStatus;
@@ -60,37 +61,64 @@ const Restaurant: NextPage = () => {
   }, []);
 
   const getRestaurantInfos = async (): Promise<void> => {
-    if (restaurantContract) {
+    const provider = getProvider();
+    if (restaurantContract && provider) {
       const restaurantName = await restaurantContract.name();
-      const tables = await getTables();
-      setRestaurant({ name: restaurantName, tables: [] });
+      const tableAddresses = await restaurantContract!.getAllTableAddresses();
+      let tables: ITable[] = [];
+      if (tableAddresses.length > 0) {
+        tables = await getTableDetails(provider, tableAddresses);
+      }
+      setRestaurant({ name: restaurantName, tables });
     }
   };
 
-  const getTables = async (): Promise<void> => {
-    const provider = getProvider();
-    if (provider) {
-      const tableAddresses = await restaurantContract!.getAllTableAddresses();
-      console.log("tables", tableAddresses);
-      if (tableAddresses.length > 0) {
-        tableAddresses.map(async (item: string) => {
-          const tableContract = new ethers.Contract(
-            item,
-            TableAbi.abi,
-            provider.getSigner()
-          );
-          const details = await tableContract.getDetails();
-          console.log("Detail", details);
+  const getTableDetails = async (
+    provider: ethers.providers.Web3Provider,
+    tableAddresses: string[]
+  ): Promise<ITable[]> => {
+    const tableCollection: ITable[] = [];
+    console.log("all table addresses", tableAddresses);
+    console.log("Proise in the making");
+    return Promise.all(
+      tableAddresses.map((item: string): Promise<ITable> => {
+        return retrieveTableInfo(provider, item);
+      })
+    )
+      .then((data: any) => {
+        data.map((item: ITable) => {
+          tableCollection.push(item);
         });
-      }
-    }
+        return tableCollection;
+      })
+      .catch((err: any) => {
+        return tableCollection;
+      });
+  };
+
+  const retrieveTableInfo = async (
+    provider: ethers.providers.Web3Provider,
+    address: string
+  ): Promise<ITable> => {
+    const tableContract = new ethers.Contract(
+      address,
+      TableAbi.abi,
+      provider.getSigner()
+    );
+    const tableDetails = await tableContract.getDetails();
+    console.log("table details", tableDetails[1]);
+    return {
+      id: tableDetails[0].toNumber(),
+      name: tableDetails[1],
+      address: address,
+      status: tableDetails[2],
+    };
   };
 
   const handleCreateTable = useCallback(async () => {
     if (restaurantContract) {
       try {
-        const result = await restaurantContract.addTable(tableName);
-        /* Listen to event and onces created refresh page */
+        restaurantContract.addTable(tableName);
       } catch (e) {
         console.log(e);
       }
