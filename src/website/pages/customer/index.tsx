@@ -64,7 +64,7 @@ const CustomerIndex: NextPage = () => {
                 <div className="hero flex flex-col items-center justify-center">
                     {restaurants.length > 0 && <div className="flex flex-row flex-wrap justify-start gap-3.5">
                         {restaurants.map((restaurant) => <Link key={restaurant.address}
-                                                               href={"/customer/checkin/" + restaurant.address} passHref>
+                                                               href={"/restaurant/" + restaurant.address + "/view"} passHref>
                             <div className="cursor-pointer hover:scale-125 transition-transform bg-white h-48 w-48 shadow-lg border-purple-400 border rounded-lg flex flex-col items-center justify-center">
                                 <IoHomeOutline  size={50} className="text-purple-400 mb-5"/>
                                 {restaurant.name}
