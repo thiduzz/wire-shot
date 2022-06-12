@@ -1,28 +1,19 @@
 import Head from "@components/Head";
 import Layout from "@components/Layout";
+import { TableCreate, TableList } from "@components/Restaurant";
 import { useEthers } from "@hooks/useEthers";
-import { ETableStatus, ITable, STATUSMAPPING } from "@local-types/table";
+import { ITable } from "@local-types/table";
 import RestaurantAbi from "@wireshot/hardhat/artifacts/contracts/Restaurant.sol/Restaurant.json";
 import TableAbi from "@wireshot/hardhat/artifacts/contracts/Table.sol/Table.json";
-import { table } from "console";
 import { ethers } from "ethers";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import React, { useCallback, useEffect, useState } from "react";
-import { IoEllipseOutline } from "react-icons/io5";
 
 interface IRestaurant {
   name: string;
   tables: Array<ITable>;
 }
-
-const style: {
-  [key in ETableStatus]: string;
-} = {
-  [ETableStatus.Free]: "text-green-400",
-  [ETableStatus.Busy]: "text-orange-400",
-  [ETableStatus.Closed]: "text-red-400",
-};
 
 const Restaurant: NextPage = () => {
   const router = useRouter();
@@ -134,51 +125,19 @@ const Restaurant: NextPage = () => {
           {!restaurant && <span>Loading...</span>}
           {restaurant && (
             <div>
-              <h1>Restaurant: {restaurant.name}</h1>
-              {restaurant.tables.length > 0 && (
-                <div className="flex flex-row flex-wrap justify-start my-4 gap-4">
-                  {restaurant.tables.map((table) => (
-                    <div
-                      key={table.name}
-                      className={`${
-                        style[table.status]
-                      } relative cursor-pointer hover:scale-125 transition-transform bg-white h-48 w-48 shadow-lg border rounded-lg flex flex-col items-center justify-center`}
-                    >
-                      <div
-                        className={`${
-                          style[table.status]
-                        } absolute top-2 right-3 text-sm`}
-                      >
-                        {STATUSMAPPING[table.status]}
-                      </div>
-                      <IoEllipseOutline
-                        size={50}
-                        className={`${style[table.status]} mb-5`}
-                      />
-                      {table.name}
-                    </div>
-                  ))}
-                </div>
-              )}
-              {restaurant.tables.length <= 0 && (
-                <span>No tables defined...</span>
-              )}
+              <div>
+                <h1>Restaurant: {restaurant.name}</h1>
+                {restaurant.tables.length > 0 && (
+                  <TableList tables={restaurant.tables} />
+                )}
+              </div>
+              <TableCreate
+                value={tableName}
+                onChange={(value: string) => setTableName(value)}
+                onCreation={handleCreateTable}
+              />
             </div>
           )}
-        </div>
-        <div className="mt-10 flex flex-row items-center gap-x-3.5">
-          <input
-            type="text"
-            value={tableName}
-            onChange={(e) => setTableName(e.target.value)}
-            className="w-64 border border-gray-300 rounded-lg focus:active:border-purple-400 px-3 py-3 active:border-purple-400"
-          />
-          <button
-            className="bg-purple-400 text-white p-5 rounded-lg"
-            onClick={handleCreateTable}
-          >
-            Create Table
-          </button>
         </div>
       </div>
     </Layout>
