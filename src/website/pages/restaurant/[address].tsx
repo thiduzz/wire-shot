@@ -60,10 +60,8 @@ const Restaurant: NextPage = () => {
   }, []);
 
   const getRestaurantInfos = async (): Promise<void> => {
-    console.log("Try infos");
     if (restaurantContract) {
       const restaurantName = await restaurantContract.name();
-      console.log("got the restaurant name", restaurantName);
       const tables = await getTables();
       setRestaurant({ name: restaurantName, tables: [] });
     }
@@ -74,15 +72,17 @@ const Restaurant: NextPage = () => {
     if (provider) {
       const tableAddresses = await restaurantContract!.getAllTableAddresses();
       console.log("tables", tableAddresses);
-      tableAddresses.map(async (item: string) => {
-        const tableContract = new ethers.Contract(
-          item,
-          TableAbi.abi,
-          provider.getSigner()
-        );
-        const details = await tableContract.getDetails();
-        console.log("Details", details);
-      });
+      if (tableAddresses.length > 0) {
+        tableAddresses.map(async (item: string) => {
+          const tableContract = new ethers.Contract(
+            item,
+            TableAbi.abi,
+            provider.getSigner()
+          );
+          const details = await tableContract.getDetails();
+          console.log("Detail", details);
+        });
+      }
     }
   };
 
