@@ -20,44 +20,42 @@ contract Order {
 
     event PaidOrder(uint256 price, uint256[] orderItems);
 
-    Restaurant private restaurant;
-    uint256 msgValue;
+    Restaurant public restaurant;
     Table private table;
-    uint256 private id;
-    address payable private tableAddress;
     address private customerAddress;
     uint256[] private orderItems;
+    uint256 private id;
+    uint256 private paidPrice;
     OrderStatus private status;
     
     event ClosedOrder(address orderAddress,uint256[] orderItems, uint256 price);
 
-    modifier IsCustomer(){
+    modifier IsCustomer() {
         require(
-            msg.sender == customerAddress,
-            "Only restaurant or customer can access the order."
+           msg.sender == customerAddress,
+            "You do not have the permission to perform this action."
         );
         _;
     }
 
-    modifier IsTable(){
+    modifier IsTable() {
         require(
-            msg.sender == tableAddress,
-            "Only Table can close order."
+           msg.sender == address(table),
+            "You do not have the permission to perform this action."
         );
         _;
     }
 
-    modifier IsRestaurant(){
+    modifier IsRestaurant() {
         require(
-            msg.sender == restaurant.getAddress(),
-            "Only restaurant or customer can access the order."
+            msg.sender == address(restaurant),
+            "You do not have the permission to perform this action."
         );
         _;
     }
 
-    constructor(address _restaurantAddress, address _customerAddress, uint256 _id) payable {
+    constructor(address payable _restaurantAddress, address _customerAddress, uint256 _id) payable {
         restaurant = Restaurant(payable(_restaurantAddress));
-        tableAddress = payable(msg.sender);
         table = Table(payable(msg.sender));
         customerAddress = _customerAddress;
         id = _id;
@@ -65,8 +63,9 @@ contract Order {
     }
 
     fallback() external payable {}
-
-    function _addItem(uint256[] memory _orderIds) public returns (bool success){
+    
+    /* IsCustomer */
+    function addMenuItem(uint256[] memory _orderIds) public returns (bool success){
         if(_orderIds.length > 0) {
             for (uint i=0; i < _orderIds.length; i++) {
                 orderItems.push(_orderIds[i]);
@@ -77,43 +76,34 @@ contract Order {
             return false;
         }
     }
-
-    function _getOrderItems() public view returns (uint256[] memory) {
+    /* IsCustomer IsTable IsRestaurant */
+    function getOrderItems()  public view returns (uint256[] memory)  {
         return orderItems;
     }
 
-    function _calculatePrice() public view returns (uint256) {
-        uint256 price = restaurant._calculatePrice(orderItems);
+
+    function calculatePrice() public view returns (uint256) {
+        uint256 price = restaurant.calculatePrice(orderItems);
         return price;
     }
 
+    /* IsCustomer IsTable IsRestaurant */
     /* Not sure if we need to wait until payment is confirmed?  */
-    function _payAndCloseOrder() payable public {
-        uint256 price = restaurant._calculatePrice(orderItems);
+    function payOrder() payable public {
+        uint256 price = restaurant.calculatePrice(orderItems);
         require(msg.value >= price, "Your value does not cover the price");
-        _closeOrder(price);
-        _transferFundsToTable();
-        table._setTableAsFree();
+        closeOrder(price);
+        transferFundsToRestaurant();
+        table.setTableAsFree();
     }
 
-    function _transferFundsToTable() internal {
-        tableAddress.transfer(address(this).balance);
+    function transferFundsToRestaurant() internal {
+        payable(address(restaurant)).transfer(address(this).balance);
     }
 
-    function _closeOrder(uint256 _price) internal {
+    function closeOrder(uint256 _price) internal {
         status = OrderStatus.Closed;
+        paidPrice = _price;
         emit ClosedOrder(address(this), orderItems, _price);
-    }
-
-    function _getBalanceOrder() public view returns (uint256) {
-        return address(this).balance;
-    }
-
-    function _getCustomerAddress() public view returns (address) {
-        return customerAddress;
-    }
-
-    function _getOrderAddress() public view returns (address) {
-        return address(this);
     }
 }
