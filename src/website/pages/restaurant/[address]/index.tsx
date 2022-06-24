@@ -1,24 +1,23 @@
 import Head from "@components/Head";
 import Layout from "@components/Layout";
+import { MenuManagement } from "@components/Restaurant/MenuManagement/MenuManagement";
 import {
   TableCreate,
   TableList,
   TableManagement,
 } from "@components/Restaurant/TableManagement";
 import { useEthers } from "@hooks/useEthers";
-import { IRestaurant, ITable } from "@local-types/restaurant";
+import { IMenuItem, IRestaurant, ITable } from "@local-types/restaurant";
 import RestaurantAbi from "@wireshot/hardhat/artifacts/contracts/Restaurant.sol/Restaurant.json";
 import { ethers } from "ethers";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import React, { useCallback, useEffect, useState } from "react";
+import { TableContractService } from "services/TableContractService";
 
 const Restaurant: NextPage = () => {
   const router = useRouter();
   const [restaurant, setRestaurant] = useState<IRestaurant>();
-  const [ethersProvider, setEthersProvider] =
-    useState<ethers.providers.Web3Provider>();
-
   const { getProvider } = useEthers();
 
   const loadAndSetContract = useCallback(async () => {
@@ -46,11 +45,19 @@ const Restaurant: NextPage = () => {
       const restaurantName = await restaurantContract.name();
       setRestaurant({
         name: restaurantName,
-        tables: [],
+        tables: await TableContractService.retrieveTables(
+          restaurantContract,
+          provider
+        ),
         contract: restaurantContract,
+        menu: [],
       });
     }
   };
+
+  useEffect(() => {
+    console.log("restaurant", restaurant);
+  }, [restaurant]);
 
   useEffect(() => {
     loadAndSetContract();
@@ -66,15 +73,23 @@ const Restaurant: NextPage = () => {
         <div className="hero flex flex-col items-center justify-center">
           {!restaurant && <span>Loading...</span>}
           {restaurant && (
-            <div>
-              <h1>Restaurant: {restaurant.name}</h1>
-              <h2>Table Management</h2>
-              <TableManagement
-                restaurant={restaurant}
-                setRestaurantTables={(tables: ITable[]) =>
-                  setRestaurant({ ...restaurant, tables })
-                }
-              />
+            <div className="flex flex-col gap-8">
+              <h1>{restaurant.name}</h1>
+              <div className="flex flex-col gap-20">
+                <div>
+                  <h2>Table Management</h2>
+                  <TableManagement restaurant={restaurant} />
+                </div>
+                <div>
+                  <h2>Menu Management</h2>
+                  <MenuManagement
+                    restaurant={restaurant}
+                    setMenu={(menu: IMenuItem[]) =>
+                      setRestaurant({ ...restaurant, menu })
+                    }
+                  />
+                </div>
+              </div>
             </div>
           )}
         </div>
