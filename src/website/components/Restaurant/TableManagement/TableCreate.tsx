@@ -1,4 +1,4 @@
-import { ETableStatus, ITable, STATUSMAPPING } from "@local-types/table";
+import { ETableStatus, ITable, STATUSMAPPING } from "@local-types/restaurant";
 import React from "react";
 import { IoEllipseOutline } from "react-icons/io5";
 import { ITableCreateProps } from "./Table.types";

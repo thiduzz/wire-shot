@@ -1,34 +1,25 @@
 import Head from "@components/Head";
 import Layout from "@components/Layout";
-import { TableCreate, TableList } from "@components/Restaurant";
+import {
+  TableCreate,
+  TableList,
+  TableManagement,
+} from "@components/Restaurant/TableManagement";
 import { useEthers } from "@hooks/useEthers";
-import { ITable } from "@local-types/table";
+import { IRestaurant, ITable } from "@local-types/restaurant";
 import RestaurantAbi from "@wireshot/hardhat/artifacts/contracts/Restaurant.sol/Restaurant.json";
-import TableAbi from "@wireshot/hardhat/artifacts/contracts/Table.sol/Table.json";
 import { ethers } from "ethers";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import React, { useCallback, useEffect, useState } from "react";
 
-interface IRestaurant {
-  name: string;
-  tables: Array<ITable>;
-}
-
 const Restaurant: NextPage = () => {
   const router = useRouter();
-  const [restaurant, setRestaurant] = useState<IRestaurant | null>(null);
-  const [tableName, setTableName] = useState<string>("");
-  const [restaurantContract, setRestaurantContract] =
-    useState<ethers.Contract>();
+  const [restaurant, setRestaurant] = useState<IRestaurant>();
+  const [ethersProvider, setEthersProvider] =
+    useState<ethers.providers.Web3Provider>();
 
   const { getProvider } = useEthers();
-
-  useEffect(() => {
-    if (restaurantContract) {
-      getRestaurantInfos();
-    }
-  }, [restaurantContract]);
 
   const loadAndSetContract = useCallback(async () => {
     const provider = getProvider();
@@ -41,74 +32,25 @@ const Restaurant: NextPage = () => {
             RestaurantAbi.abi,
             provider.getSigner()
           );
-          setRestaurantContract(restaurantContract);
+          getRestaurantInfos(restaurantContract);
         }
       }
     }
   }, []);
 
-  const getRestaurantInfos = async (): Promise<void> => {
+  const getRestaurantInfos = async (
+    restaurantContract: ethers.Contract
+  ): Promise<void> => {
     const provider = getProvider();
     if (restaurantContract && provider) {
       const restaurantName = await restaurantContract.name();
-      const tableAddresses = await restaurantContract!.getAllTableAddresses();
-      let tables: ITable[] = [];
-      if (tableAddresses.length > 0) {
-        tables = await getTableDetails(provider, tableAddresses);
-      }
-      setRestaurant({ name: restaurantName, tables });
-    }
-  };
-
-  const getTableDetails = async (
-    provider: ethers.providers.Web3Provider,
-    tableAddresses: string[]
-  ): Promise<ITable[]> => {
-    const tableCollection: ITable[] = [];
-    return Promise.all(
-      tableAddresses.map((item: string): Promise<ITable> => {
-        return retrieveTableInfo(provider, item);
-      })
-    )
-      .then((data: any) => {
-        data.map((item: ITable) => {
-          tableCollection.push(item);
-        });
-        return tableCollection;
-      })
-      .catch((err: any) => {
-        console.log("Error while getting table details", err);
-        return tableCollection;
+      setRestaurant({
+        name: restaurantName,
+        tables: [],
+        contract: restaurantContract,
       });
-  };
-
-  const retrieveTableInfo = async (
-    provider: ethers.providers.Web3Provider,
-    address: string
-  ): Promise<ITable> => {
-    const tableContract = new ethers.Contract(
-      address,
-      TableAbi.abi,
-      provider.getSigner()
-    );
-    const tableDetails = await tableContract.getDetails();
-    return {
-      id: tableDetails[0].toNumber(),
-      name: tableDetails[1],
-      address: address,
-      status: tableDetails[2],
-    };
-  };
-
-  const handleCreateTable = useCallback(async () => {
-    if (restaurantContract) {
-      try {
-        restaurantContract.addTable(tableName);
-      } catch (e) {
-        console.log(e);
-      }
     }
-  }, [tableName]);
+  };
 
   useEffect(() => {
     loadAndSetContract();
@@ -125,16 +67,13 @@ const Restaurant: NextPage = () => {
           {!restaurant && <span>Loading...</span>}
           {restaurant && (
             <div>
-              <div>
-                <h1>Restaurant: {restaurant.name}</h1>
-                {restaurant.tables.length > 0 && (
-                  <TableList tables={restaurant.tables} />
-                )}
-              </div>
-              <TableCreate
-                value={tableName}
-                onChange={(value: string) => setTableName(value)}
-                onCreation={handleCreateTable}
+              <h1>Restaurant: {restaurant.name}</h1>
+              <h2>Table Management</h2>
+              <TableManagement
+                restaurant={restaurant}
+                setRestaurantTables={(tables: ITable[]) =>
+                  setRestaurant({ ...restaurant, tables })
+                }
               />
             </div>
           )}

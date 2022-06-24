@@ -1,3 +1,5 @@
+import { ethers } from "ethers";
+
 export enum ETableStatus {
   Busy,
   Free,
@@ -13,10 +15,16 @@ export interface ITable {
   status: ETableStatus;
 }
 
+export interface IRestaurant {
+  name: string;
+  tables: Array<ITable>;
+  contract?: ethers.Contract;
+}
+
 export const STATUSMAPPING: {
   [key in ETableStatus]: TTableStatusString;
 } = {
   "0": "Busy",
   "1": "Free",
-  "2": "Closed"
+  "2": "Closed",
 };
