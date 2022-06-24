@@ -2,7 +2,7 @@ import { IRestaurant, ITable } from "@local-types/restaurant";
 import { ethers } from "ethers";
 import TableAbi from "@wireshot/hardhat/artifacts/contracts/Table.sol/Table.json";
 
-export const TableContractService = {
+export const TableService = {
   retrieveTables: async (
     contract: ethers.Contract,
     provider: ethers.providers.Web3Provider
@@ -15,9 +15,12 @@ export const TableContractService = {
     }
     return [];
   },
-  createTable: async (contract: ethers.Contract, name: string) => {
+  createTable: async (
+    contract: ethers.Contract,
+    name: string
+  ): Promise<boolean> => {
     try {
-      const response = await contract.addTable(name);
+      await contract.addTable(name);
       return true;
     } catch (e) {
       console.log(e);

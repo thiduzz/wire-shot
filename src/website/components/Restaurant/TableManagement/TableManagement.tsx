@@ -1,6 +1,6 @@
 import { IRestaurant } from "@local-types/restaurant";
 import React, { useState } from "react";
-import { TableContractService } from "services";
+import { TableService } from "services";
 import { TableCreate, TableList } from ".";
 
 export const TableManagement = ({
@@ -10,9 +10,11 @@ export const TableManagement = ({
 }) => {
   const [tableName, setTableName] = useState<string>("");
 
-  const createTable = () => {
-    if (restaurant.contract)
-      TableContractService.createTable(restaurant.contract, tableName);
+  const createTable = async () => {
+    if (restaurant.contract) {
+      await TableService.createTable(restaurant.contract, tableName);
+      setTableName("");
+    }
   };
 
   return (

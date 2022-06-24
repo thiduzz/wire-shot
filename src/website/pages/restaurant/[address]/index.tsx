@@ -1,19 +1,15 @@
 import Head from "@components/Head";
 import Layout from "@components/Layout";
 import { MenuManagement } from "@components/Restaurant/MenuManagement/MenuManagement";
-import {
-  TableCreate,
-  TableList,
-  TableManagement,
-} from "@components/Restaurant/TableManagement";
+import { TableManagement } from "@components/Restaurant/TableManagement";
 import { useEthers } from "@hooks/useEthers";
-import { IMenuItem, IRestaurant, ITable } from "@local-types/restaurant";
+import { IRestaurant } from "@local-types/restaurant";
 import RestaurantAbi from "@wireshot/hardhat/artifacts/contracts/Restaurant.sol/Restaurant.json";
 import { ethers } from "ethers";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import React, { useCallback, useEffect, useState } from "react";
-import { TableContractService } from "services/TableContractService";
+import { MenuService, TableService } from "services";
 
 const Restaurant: NextPage = () => {
   const router = useRouter();
@@ -45,19 +41,12 @@ const Restaurant: NextPage = () => {
       const restaurantName = await restaurantContract.name();
       setRestaurant({
         name: restaurantName,
-        tables: await TableContractService.retrieveTables(
-          restaurantContract,
-          provider
-        ),
+        tables: await TableService.retrieveTables(restaurantContract, provider),
         contract: restaurantContract,
-        menu: [],
+        menu: await MenuService.retrieveMenu(restaurantContract),
       });
     }
   };
-
-  useEffect(() => {
-    console.log("restaurant", restaurant);
-  }, [restaurant]);
 
   useEffect(() => {
     loadAndSetContract();
@@ -82,12 +71,7 @@ const Restaurant: NextPage = () => {
                 </div>
                 <div>
                   <h2>Menu Management</h2>
-                  <MenuManagement
-                    restaurant={restaurant}
-                    setMenu={(menu: IMenuItem[]) =>
-                      setRestaurant({ ...restaurant, menu })
-                    }
-                  />
+                  <MenuManagement restaurant={restaurant} />
                 </div>
               </div>
             </div>
