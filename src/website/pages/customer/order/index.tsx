@@ -2,23 +2,21 @@ import Head from "@components/Head";
 import Layout from "@components/Layout";
 import { MenuList } from "@components/Restaurant/MenuManagement";
 import { TableList } from "@components/Restaurant/TableManagement";
-import { useProfile } from "@context/profile";
 import { useEthers } from "@hooks/useEthers";
 import { Restaurant, Table } from "@local-types/restaurant";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import React, { useCallback, useEffect, useState } from "react";
-import { RestaurantService, TableService } from "services";
+import { OrderService, RestaurantService } from "services";
 
-const Restaurant: NextPage = () => {
+const Order: NextPage = () => {
   const router = useRouter();
   const { address } = router.query;
   const [restaurant, setRestaurant] = useState<Restaurant>();
   const [restaurantService, setRestaurantService] =
     useState<RestaurantService>();
-  const [tableService, setTableService] = useState<TableService>();
+  const [orderService, setOrderService] = useState<OrderService>();
   const { getProvider } = useEthers();
-  const { profile } = useProfile();
 
   useEffect(() => {
     const provider = getProvider();
@@ -33,18 +31,6 @@ const Restaurant: NextPage = () => {
     if (restaurantService) retrieveRestaurantDetails();
   }, [restaurantService]);
 
-  useEffect(() => {
-    if (restaurantService) checkIfUserRunningOrder();
-  }, [tableService]);
-
-  const checkIfUserRunningOrder = async () => {
-    if (profile && restaurantService) {
-      const openOrders = await restaurantService.getExistingOrders(
-        profile.address
-      );
-      console.log("Here are open orders", openOrders);
-    }
-  };
   const retrieveRestaurantDetails = useCallback(async () => {
     if (restaurantService && typeof address === "string") {
       const contract = restaurantService.getContract(address);
@@ -92,4 +78,4 @@ const Restaurant: NextPage = () => {
   );
 };
 
-export default Restaurant;
+export default Order;

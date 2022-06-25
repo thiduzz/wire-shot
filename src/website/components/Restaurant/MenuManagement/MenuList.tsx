@@ -1,21 +1,7 @@
-import {
-  ETableStatus,
-  IMenu,
-  ITable,
-  STATUSMAPPING,
-} from "@local-types/restaurant";
+import { IMenuItem } from "@local-types/restaurant";
 import React from "react";
-import { IoEllipseOutline } from "react-icons/io5";
 
-const style: {
-  [key in ETableStatus]: string;
-} = {
-  [ETableStatus.Free]: "text-green-400",
-  [ETableStatus.Busy]: "text-orange-400",
-  [ETableStatus.Closed]: "text-red-400",
-};
-
-export const MenuList = ({ menu }: { menu: IMenu[] }) => (
+export const MenuList = ({ menu }: { menu: IMenuItem[] }) => (
   <>
     <div className="flex flex-row flex-wrap justify-start my-4 gap-4">
       {menu.map((item) => (

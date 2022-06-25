@@ -1,4 +1,4 @@
-import { ITable } from "@local-types/restaurant";
+import { Restaurant, Table } from "@local-types/restaurant";
 import TableAbi from "@wireshot/hardhat/artifacts/contracts/Table.sol/Table.json";
 import { ethers } from "ethers";
 
@@ -17,22 +17,23 @@ export class TableService {
     );
   };
 
-  retrieveTables = async (contract: ethers.Contract): Promise<ITable[]> => {
+  retrieveTables = async (contract: ethers.Contract): Promise<Table[]> => {
     const tableAddresses = await contract.getAllTableAddresses();
-    let tables: ITable[] = [];
+    let tables: Table[] = [];
     if (tableAddresses.length > 0) {
       tables = await this.getTableDetails(tableAddresses);
       return tables;
     }
     return [];
   };
+
   checkIn = async (address: string): Promise<boolean> => {
     const tableContract = this.getContract(address);
     const response = await tableContract.checkIn();
     return response;
   };
 
-  retrieveTableDetails = async (address: string): Promise<ITable> => {
+  retrieveTableDetails = async (address: string): Promise<Table> => {
     const tableContract = this.getContract(address);
     const tableDetails = await tableContract.getDetails();
     return {
@@ -43,30 +44,17 @@ export class TableService {
     };
   };
 
-  createTable = async (
-    contract: ethers.Contract,
-    name: string
-  ): Promise<boolean> => {
-    try {
-      await contract.addTable(name);
-      return true;
-    } catch (e) {
-      console.log(e);
-      return false;
-    }
-  };
-
   private getTableDetails = async (
     tableAddresses: string[]
-  ): Promise<ITable[]> => {
-    const tableCollection: ITable[] = [];
+  ): Promise<Table[]> => {
+    const tableCollection: Table[] = [];
     return Promise.all(
-      tableAddresses.map((item: string): Promise<ITable> => {
+      tableAddresses.map((item: string): Promise<Table> => {
         return this.retrieveTableDetails(item);
       })
     )
       .then((data: any) => {
-        data.map((item: ITable) => {
+        data.map((item: Table) => {
           tableCollection.push(item);
         });
         return tableCollection;

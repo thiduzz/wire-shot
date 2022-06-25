@@ -8,14 +8,14 @@ export enum ETableStatus {
 
 type TTableStatusString = "Free" | "Busy" | "Closed";
 
-export interface ITable {
+export interface Table {
   id: number;
   name: string;
   address: string;
   status: ETableStatus;
 }
 
-export type TMenuKeys = "id" | "name" | "price"
+export type TMenuKeys = "id" | "name" | "price";
 export interface IMenuItem {
   id?: number;
   name: string;
@@ -24,7 +24,7 @@ export interface IMenuItem {
 
 export interface Restaurant {
   name: string;
-  tables: Array<ITable>;
+  tables: Array<Table>;
   menu: Array<IMenuItem>;
   contract?: ethers.Contract;
 }

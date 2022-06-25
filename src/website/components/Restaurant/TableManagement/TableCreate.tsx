@@ -1,21 +1,13 @@
-import { ETableStatus, ITable, STATUSMAPPING } from "@local-types/restaurant";
+import { ETableStatus, Table, STATUSMAPPING } from "@local-types/restaurant";
 import React from "react";
 import { IoEllipseOutline } from "react-icons/io5";
-import { ITableCreateProps } from "./Table.types";
-
-const style: {
-  [key in ETableStatus]: string;
-} = {
-  [ETableStatus.Free]: "text-green-400",
-  [ETableStatus.Busy]: "text-orange-400",
-  [ETableStatus.Closed]: "text-red-400",
-};
+import { TableCreateProps } from "./Table.types";
 
 export const TableCreate = ({
   value,
   onChange,
   onCreation,
-}: ITableCreateProps) => (
+}: TableCreateProps) => (
   <div className="mt-10 flex flex-row items-center gap-x-3.5">
     <input
       type="text"

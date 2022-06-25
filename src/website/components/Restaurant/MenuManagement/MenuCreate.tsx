@@ -1,20 +1,6 @@
-import {
-  ETableStatus,
-  ITable,
-  STATUSMAPPING,
-  TMenuKeys,
-} from "@local-types/restaurant";
+import { TMenuKeys } from "@local-types/restaurant";
 import React from "react";
-import { IoEllipseOutline } from "react-icons/io5";
 import { IMenuCreateProps } from "./Menu.types";
-
-const style: {
-  [key in ETableStatus]: string;
-} = {
-  [ETableStatus.Free]: "text-green-400",
-  [ETableStatus.Busy]: "text-orange-400",
-  [ETableStatus.Closed]: "text-red-400",
-};
 
 export const MenuCreate = ({
   menu,

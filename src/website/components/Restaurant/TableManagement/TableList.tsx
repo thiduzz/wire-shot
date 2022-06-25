@@ -1,7 +1,7 @@
-import { ETableStatus, ITable, STATUSMAPPING } from "@local-types/restaurant";
+import { ETableStatus, Table, STATUSMAPPING } from "@local-types/restaurant";
 import React from "react";
 import { IoEllipseOutline } from "react-icons/io5";
-import { ITableListProps } from "./Table.types";
+import { TableListProps } from "./Table.types";
 
 const style: {
   [key in ETableStatus]: string;
@@ -11,8 +11,8 @@ const style: {
   [ETableStatus.Closed]: "text-red-400",
 };
 
-export const TableList = ({ tables, onClickHandler }: ITableListProps) => {
-  const onClick = (table: ITable) => {
+export const TableList = ({ tables, onClickHandler }: TableListProps) => {
+  const onClick = (table: Table) => {
     if (onClickHandler) onClickHandler(table);
   };
   return (
