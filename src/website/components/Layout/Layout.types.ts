@@ -4,4 +4,5 @@ export interface LayoutProps {
     children?: ReactNode,
     topBar?: ReactNode,
     footer?: ReactNode
+    isLoading?: boolean;
 }

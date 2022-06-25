@@ -11,12 +11,10 @@ import { TableService } from "services";
 export class RestaurantService {
   provider: ethers.providers.Web3Provider;
   tableService: TableService;
-  tables: Table[];
   restaurant: Restaurant | null;
 
   constructor(provider: ethers.providers.Web3Provider, address: string) {
     this.provider = provider;
-    this.tables = [];
     this.restaurant = null;
     this.tableService = new TableService(provider);
   }
@@ -54,20 +52,16 @@ export class RestaurantService {
 
   /* ORDER */
   getExistingOrders = async (customerAddress: string): Promise<string[]> => {
-    const matchingOrders = [];
-    const busyTables = this.tables.filter(
-      (table) => table.status === ETableStatus.Busy
-    );
-    if (busyTables.length > 0) {
-      busyTables.map(async (table) => {
-        const tableContract = this.tableService.getContract(table.address);
-        const address = await tableContract.getOpenOrderAddress(
-          customerAddress
-        );
-        if (address) matchingOrders.push();
-      });
+    if (this.restaurant?.tables) {
+      const matchingOrders = [];
+      const busyTables = this.restaurant.tables.filter(
+        (table) => table.status === ETableStatus.Busy
+      );
+      if (busyTables.length > 0) {
+        return await this.getMatchingOrders(busyTables, customerAddress);
+      }
     }
-    return matchingOrders;
+    return [];
   };
 
   /* MENU */
@@ -100,5 +94,27 @@ export class RestaurantService {
       console.log(e);
       return false;
     }
+  };
+  getMatchingOrders = async (
+    tableAddresses: Table[],
+    customerAddress: string
+  ): Promise<string[]> => {
+    const matchingOrders: string[] = [];
+    return Promise.all(
+      tableAddresses.map(async (table) => {
+        const tableContract = this.tableService.getContract(table.address);
+        return tableContract.getOpenOrderAddress(customerAddress);
+      })
+    )
+      .then((data: any) => {
+        data.map((item: string) => {
+          if (item) matchingOrders.push(item);
+        });
+        return matchingOrders;
+      })
+      .catch((err: any) => {
+        console.log("Error while getting matching orders for customer", err);
+        return matchingOrders;
+      });
   };
 }

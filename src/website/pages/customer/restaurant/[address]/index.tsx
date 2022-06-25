@@ -4,54 +4,57 @@ import { MenuList } from "@components/Restaurant/MenuManagement";
 import { TableList } from "@components/Restaurant/TableManagement";
 import { useProfile } from "@context/profile";
 import { useEthers } from "@hooks/useEthers";
-import { Restaurant, Table } from "@local-types/restaurant";
+import { Table } from "@local-types/restaurant";
+import { ethers } from "ethers";
 import type { NextPage } from "next";
-import { useRouter } from "next/router";
+import { Router, useRouter } from "next/router";
+import { NextResponse } from "next/server";
 import React, { useCallback, useEffect, useState } from "react";
 import { RestaurantService, TableService } from "services";
 
 const Restaurant: NextPage = () => {
   const router = useRouter();
   const { address } = router.query;
-  const [restaurant, setRestaurant] = useState<Restaurant>();
+  const { profile } = useProfile();
+  const { getProvider } = useEthers();
+
   const [restaurantService, setRestaurantService] =
     useState<RestaurantService>();
   const [tableService, setTableService] = useState<TableService>();
-  const { getProvider } = useEthers();
-  const { profile } = useProfile();
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const provider = getProvider();
-    if (provider) {
-      const restaurant = new RestaurantService(provider);
-      setRestaurantService(restaurant);
-      setTableService(restaurant.tableService);
+    if (provider && typeof address === "string") {
+      initializeRestaurant(provider, address);
     }
   }, []);
 
   useEffect(() => {
-    if (restaurantService) retrieveRestaurantDetails();
+    if (restaurantService) checkIfUserRunningOrder();
   }, [restaurantService]);
 
-  useEffect(() => {
-    if (restaurantService) checkIfUserRunningOrder();
-  }, [tableService]);
+  const initializeRestaurant = async (
+    provider: ethers.providers.Web3Provider,
+    address: string
+  ) => {
+    const restaurant = new RestaurantService(provider, address);
+    await restaurant.setRestaurant(restaurant.getContract(address));
+    setRestaurantService(restaurant);
+    setTableService(restaurant.tableService);
+  };
 
   const checkIfUserRunningOrder = async () => {
     if (profile && restaurantService) {
       const openOrders = await restaurantService.getExistingOrders(
         profile.address
       );
-      console.log("Here are open orders", openOrders);
+      if (openOrders.length > 0) {
+        router.push("/customer/order/" + openOrders[0]);
+      }
+      setIsLoading(false);
     }
   };
-  const retrieveRestaurantDetails = useCallback(async () => {
-    if (restaurantService && typeof address === "string") {
-      const contract = restaurantService.getContract(address);
-      const restaurant = await restaurantService.getDetails(contract);
-      setRestaurant(restaurant);
-    }
-  }, [restaurantService]);
 
   const checkInTable = async (table: Table) => {
     if (tableService) {
@@ -61,27 +64,27 @@ const Restaurant: NextPage = () => {
   };
 
   return (
-    <Layout>
+    <Layout isLoading>
       <Head
         title="Wireshot - Restaurant"
         description="Your Restaurant Payment solution"
       />
-      {restaurant && (
+      {restaurantService?.restaurant && (
         <div className="page-content justify-center">
           <div className="hero flex flex-col items-center justify-center">
             <div className="flex flex-col gap-8">
-              <h1>Welcome to {restaurant.name}</h1>
+              <h1>Welcome to {restaurantService.restaurant.name}</h1>
               <div className="flex flex-col gap-20">
                 <div>
                   <h2>Select a table</h2>
                   <TableList
-                    tables={restaurant.tables}
+                    tables={restaurantService.restaurant.tables}
                     onClickHandler={checkInTable}
                   />
                 </div>
                 <div>
                   <h2>Menu</h2>
-                  <MenuList menu={restaurant.menu} />
+                  <MenuList menu={restaurantService.restaurant.menu} />
                 </div>
               </div>
             </div>
