@@ -7,9 +7,8 @@ import { useEthers } from "@hooks/useEthers";
 import { Table } from "@local-types/restaurant";
 import { ethers } from "ethers";
 import type { NextPage } from "next";
-import { Router, useRouter } from "next/router";
-import { NextResponse } from "next/server";
-import React, { useCallback, useEffect, useState } from "react";
+import { useRouter } from "next/router";
+import React, { useEffect, useState } from "react";
 import { RestaurantService, TableService } from "services";
 
 const Restaurant: NextPage = () => {
@@ -39,9 +38,10 @@ const Restaurant: NextPage = () => {
     address: string
   ) => {
     const restaurant = new RestaurantService(provider, address);
-    await restaurant.setRestaurant(restaurant.getContract(address));
-    setRestaurantService(restaurant);
-    setTableService(restaurant.tableService);
+    restaurant.init(() => {
+      setRestaurantService(restaurant);
+      setTableService(restaurant.tableService);
+    });
   };
 
   const checkIfUserRunningOrder = async () => {
@@ -49,22 +49,20 @@ const Restaurant: NextPage = () => {
       const openOrders = await restaurantService.getExistingOrders(
         profile.address
       );
-      if (openOrders.length > 0) {
+      if (openOrders.length > 0)
         router.push("/customer/order/" + openOrders[0]);
-      }
-      setIsLoading(false);
+      else setIsLoading(false);
     }
   };
 
   const checkInTable = async (table: Table) => {
     if (tableService) {
       const status = await tableService.checkIn(table.address);
-      console.log("Check in into table", status);
     }
   };
 
   return (
-    <Layout isLoading>
+    <Layout isLoading={isLoading}>
       <Head
         title="Wireshot - Restaurant"
         description="Your Restaurant Payment solution"

@@ -16,12 +16,13 @@ const Restaurant: NextPage = () => {
 
   const [restaurantService, setRestaurantService] =
     useState<RestaurantService>();
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const provider = getProvider();
-    if (provider && typeof address === "string") {
+    if (provider && typeof address === "string")
       initializeRestaurant(provider, address);
-    }
+    else setIsLoading(false);
   }, []);
 
   const initializeRestaurant = async (
@@ -29,12 +30,14 @@ const Restaurant: NextPage = () => {
     address: string
   ) => {
     const restaurant = new RestaurantService(provider, address);
-    await restaurant.setRestaurant(restaurant.getContract(address));
-    setRestaurantService(restaurant);
+    restaurant.init(() => {
+      setRestaurantService(restaurant);
+      setIsLoading(false);
+    });
   };
 
   return (
-    <Layout>
+    <Layout isLoading={isLoading}>
       <Head
         title="Wireshot - Restaurant"
         description="Your Restaurant Payment solution"

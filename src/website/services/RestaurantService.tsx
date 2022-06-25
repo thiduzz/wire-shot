@@ -11,30 +11,43 @@ import { TableService } from "services";
 export class RestaurantService {
   provider: ethers.providers.Web3Provider;
   tableService: TableService;
-  restaurant: Restaurant | null;
+  restaurant: Restaurant;
+  address: string;
 
   constructor(provider: ethers.providers.Web3Provider, address: string) {
     this.provider = provider;
-    this.restaurant = null;
+    this.restaurant = {
+      menu: [],
+      tables: [],
+      name: "",
+      address,
+    };
+    this.address = address;
     this.tableService = new TableService(provider);
   }
 
-  getContract = (address: string): ethers.Contract => {
+  async init(callback: () => void) {
+    this.restaurant = await this.getRestaurant(this.getContract(this.address));
+    callback.bind(this)();
+  }
+
+  private getContract = (address: string): ethers.Contract => {
     return new ethers.Contract(
       address,
       RestaurantAbi.abi,
       this.provider.getSigner()
     );
   };
-  setRestaurant = async (
+  private getRestaurant = async (
     restaurantContract: ethers.Contract
-  ): Promise<void> => {
+  ): Promise<Restaurant> => {
     const restaurantName = await restaurantContract.name();
-    this.restaurant = {
+    return {
       name: restaurantName,
       tables: await this.tableService.retrieveTables(restaurantContract),
       contract: restaurantContract,
       menu: await this.retrieveMenu(restaurantContract),
+      address: this.address,
     };
   };
 
