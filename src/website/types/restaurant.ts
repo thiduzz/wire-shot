@@ -27,7 +27,7 @@ export interface Restaurant {
   tables: Array<Table>;
   menu: Array<IMenuItem>;
   contract?: ethers.Contract;
-  address?:string;
+  address:string;
 }
 
 export const STATUSMAPPING: {

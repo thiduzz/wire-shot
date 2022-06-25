@@ -1,21 +1,12 @@
-import { Restaurant, Table } from "@local-types/restaurant";
-import TableAbi from "@wireshot/hardhat/artifacts/contracts/Table.sol/Table.json";
+import { Table } from "@local-types/restaurant";
+import { ABIS } from "const";
 import { ethers } from "ethers";
+import { SmartContractService } from "./SmartContractService";
 
-export class TableService {
-  provider: ethers.providers.Web3Provider;
-
-  constructor(provider: ethers.providers.Web3Provider) {
-    this.provider = provider;
+export class TableService extends SmartContractService {
+  constructor() {
+    super(ABIS.table);
   }
-
-  getContract = (address: string): ethers.Contract => {
-    return new ethers.Contract(
-      address,
-      TableAbi.abi,
-      this.provider.getSigner()
-    );
-  };
 
   retrieveTables = async (contract: ethers.Contract): Promise<Table[]> => {
     const tableAddresses = await contract.getAllTableAddresses();

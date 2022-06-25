@@ -4,50 +4,43 @@ import {
   Restaurant,
   Table,
 } from "@local-types/restaurant";
-import RestaurantAbi from "@wireshot/hardhat/artifacts/contracts/Restaurant.sol/Restaurant.json";
+import { ABIS } from "const";
 import { ethers } from "ethers";
-import { TableService } from "services";
+import { SmartContractService } from "./SmartContractService";
+import { TableService } from "./TableService";
 
-export class RestaurantService {
-  provider: ethers.providers.Web3Provider;
+export class RestaurantService extends SmartContractService {
   tableService: TableService;
   restaurant: Restaurant;
-  address: string;
 
-  constructor(provider: ethers.providers.Web3Provider, address: string) {
-    this.provider = provider;
+  constructor(address: string) {
+    super(ABIS.restaurant);
     this.restaurant = {
       menu: [],
       tables: [],
       name: "",
       address,
     };
-    this.address = address;
-    this.tableService = new TableService(provider);
+    this.tableService = new TableService();
   }
 
   async init(callback: () => void) {
-    this.restaurant = await this.getRestaurant(this.getContract(this.address));
+    this.restaurant = await this.getRestaurant(
+      this.getContract(this.restaurant.address)
+    );
     callback.bind(this)();
   }
 
-  private getContract = (address: string): ethers.Contract => {
-    return new ethers.Contract(
-      address,
-      RestaurantAbi.abi,
-      this.provider.getSigner()
-    );
-  };
   private getRestaurant = async (
     restaurantContract: ethers.Contract
   ): Promise<Restaurant> => {
     const restaurantName = await restaurantContract.name();
     return {
+      ...this.restaurant,
       name: restaurantName,
       tables: await this.tableService.retrieveTables(restaurantContract),
       contract: restaurantContract,
       menu: await this.retrieveMenu(restaurantContract),
-      address: this.address,
     };
   };
 

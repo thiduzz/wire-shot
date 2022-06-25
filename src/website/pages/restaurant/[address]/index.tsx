@@ -11,7 +11,6 @@ import { RestaurantService } from "services";
 
 const Restaurant: NextPage = () => {
   const router = useRouter();
-  const { getProvider } = useEthers();
   const { address } = router.query;
 
   const [restaurantService, setRestaurantService] =
@@ -19,17 +18,12 @@ const Restaurant: NextPage = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    const provider = getProvider();
-    if (provider && typeof address === "string")
-      initializeRestaurant(provider, address);
+    if (typeof address === "string") initializeRestaurant(address);
     else setIsLoading(false);
   }, []);
 
-  const initializeRestaurant = async (
-    provider: ethers.providers.Web3Provider,
-    address: string
-  ) => {
-    const restaurant = new RestaurantService(provider, address);
+  const initializeRestaurant = async (address: string) => {
+    const restaurant = new RestaurantService(address);
     restaurant.init(() => {
       setRestaurantService(restaurant);
       setIsLoading(false);

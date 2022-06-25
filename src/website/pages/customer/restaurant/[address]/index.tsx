@@ -5,7 +5,6 @@ import { TableList } from "@components/Restaurant/TableManagement";
 import { useProfile } from "@context/profile";
 import { useEthers } from "@hooks/useEthers";
 import { Table } from "@local-types/restaurant";
-import { ethers } from "ethers";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
@@ -15,7 +14,6 @@ const Restaurant: NextPage = () => {
   const router = useRouter();
   const { address } = router.query;
   const { profile } = useProfile();
-  const { getProvider } = useEthers();
 
   const [restaurantService, setRestaurantService] =
     useState<RestaurantService>();
@@ -23,9 +21,8 @@ const Restaurant: NextPage = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    const provider = getProvider();
-    if (provider && typeof address === "string") {
-      initializeRestaurant(provider, address);
+    if (typeof address === "string") {
+      initializeRestaurant(address);
     }
   }, []);
 
@@ -33,14 +30,17 @@ const Restaurant: NextPage = () => {
     if (restaurantService) checkIfUserRunningOrder();
   }, [restaurantService]);
 
-  const initializeRestaurant = async (
-    provider: ethers.providers.Web3Provider,
-    address: string
-  ) => {
-    const restaurant = new RestaurantService(provider, address);
+  useEffect(() => {
+    if (typeof address === "string") initializeRestaurant(address);
+    else setIsLoading(false);
+  }, []);
+
+  const initializeRestaurant = async (address: string) => {
+    const restaurant = new RestaurantService(address);
     restaurant.init(() => {
       setRestaurantService(restaurant);
       setTableService(restaurant.tableService);
+      setIsLoading(false);
     });
   };
 
