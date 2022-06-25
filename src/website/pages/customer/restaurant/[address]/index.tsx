@@ -1,7 +1,7 @@
 import Head from "@components/Head";
 import Layout from "@components/Layout";
-import { MenuManagement } from "@components/Restaurant/MenuManagement/MenuManagement";
-import { TableManagement } from "@components/Restaurant/TableManagement";
+import { MenuList } from "@components/Restaurant/MenuManagement";
+import { TableList } from "@components/Restaurant/TableManagement";
 import { useEthers } from "@hooks/useEthers";
 import { IRestaurant } from "@local-types/restaurant";
 import type { NextPage } from "next";
@@ -38,15 +38,15 @@ const Restaurant: NextPage = () => {
         <div className="page-content justify-center">
           <div className="hero flex flex-col items-center justify-center">
             <div className="flex flex-col gap-8">
-              <h1>{restaurant.name}</h1>
+              <h1>Welcome to {restaurant.name}</h1>
               <div className="flex flex-col gap-20">
                 <div>
-                  <h2>Table Management</h2>
-                  <TableManagement restaurant={restaurant} />
+                  <h2>Select a table</h2>
+                  <TableList tables={restaurant.tables} />
                 </div>
                 <div>
-                  <h2>Menu Management</h2>
-                  <MenuManagement restaurant={restaurant} />
+                  <h2>Menu</h2>
+                  <MenuList menu={restaurant.menu} />
                 </div>
               </div>
             </div>
