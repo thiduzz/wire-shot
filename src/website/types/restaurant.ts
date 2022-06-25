@@ -22,7 +22,7 @@ export interface IMenuItem {
   price: number;
 }
 
-export interface IRestaurant {
+export interface Restaurant {
   name: string;
   tables: Array<ITable>;
   menu: Array<IMenuItem>;

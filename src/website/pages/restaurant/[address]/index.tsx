@@ -3,30 +3,41 @@ import Layout from "@components/Layout";
 import { MenuManagement } from "@components/Restaurant/MenuManagement/MenuManagement";
 import { TableManagement } from "@components/Restaurant/TableManagement";
 import { useEthers } from "@hooks/useEthers";
-import { IRestaurant } from "@local-types/restaurant";
+import { Restaurant } from "@local-types/restaurant";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import React, { useCallback, useEffect, useState } from "react";
-import { RestaurantService } from "services";
+import { RestaurantService, TableService } from "services";
 
 const Restaurant: NextPage = () => {
   const router = useRouter();
-  const [restaurant, setRestaurant] = useState<IRestaurant>();
+  const { address } = router.query;
+  const [restaurant, setRestaurant] = useState<Restaurant>();
+  const [restaurantService, setRestaurantService] =
+    useState<RestaurantService>();
+  const [tableService, setTableService] = useState<TableService>();
   const { getProvider } = useEthers();
 
-  const retrieveRestaurantDetails = useCallback(async () => {
-    const { address } = router.query;
+  useEffect(() => {
     const provider = getProvider();
-    if (typeof address === "string" && provider) {
-      const contract = RestaurantService.getContract(address, provider);
-      const restaurant = await RestaurantService.getDetails(contract, provider);
-      setRestaurant(restaurant);
+    if (provider) {
+      const restaurant = new RestaurantService(provider);
+      setRestaurantService(restaurant);
+      setTableService(restaurant.tableService);
     }
   }, []);
 
   useEffect(() => {
-    retrieveRestaurantDetails();
-  }, [retrieveRestaurantDetails]);
+    if (restaurantService) retrieveRestaurantDetails();
+  }, [restaurantService]);
+
+  const retrieveRestaurantDetails = useCallback(async () => {
+    if (restaurantService && typeof address === "string") {
+      const contract = restaurantService.getContract(address);
+      const restaurant = await restaurantService.getDetails(contract);
+      setRestaurant(restaurant);
+    }
+  }, [restaurantService]);
 
   return (
     <Layout>

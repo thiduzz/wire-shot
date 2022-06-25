@@ -1,13 +1,9 @@
-import { IRestaurant } from "@local-types/restaurant";
+import { Restaurant } from "@local-types/restaurant";
 import React, { useState } from "react";
 import { TableService } from "services";
 import { TableCreate, TableList } from ".";
 
-export const TableManagement = ({
-  restaurant,
-}: {
-  restaurant: IRestaurant;
-}) => {
+export const TableManagement = ({ restaurant }: { restaurant: Restaurant }) => {
   const [tableName, setTableName] = useState<string>("");
 
   const createTable = async () => {

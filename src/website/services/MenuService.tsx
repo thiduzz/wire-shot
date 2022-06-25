@@ -1,6 +1,5 @@
-import { IMenuItem, IRestaurant, ITable } from "@local-types/restaurant";
+import { IMenuItem } from "@local-types/restaurant";
 import { ethers } from "ethers";
-import TableAbi from "@wireshot/hardhat/artifacts/contracts/Table.sol/Table.json";
 
 export const MenuService = {
   retrieveMenu: async (contract: ethers.Contract): Promise<IMenuItem[]> => {

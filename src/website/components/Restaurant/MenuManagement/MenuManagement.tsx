@@ -1,12 +1,12 @@
 import { useEthers } from "@hooks/useEthers";
-import { IMenuItem, IRestaurant, ITable } from "@local-types/restaurant";
+import { IMenuItem, Restaurant, ITable } from "@local-types/restaurant";
 import TableAbi from "@wireshot/hardhat/artifacts/contracts/Table.sol/Table.json";
 import { ethers } from "ethers";
 import React, { useCallback, useEffect, useState } from "react";
 import { MenuService } from "services";
 import { MenuCreate, MenuList } from ".";
 
-export const MenuManagement = ({ restaurant }: { restaurant: IRestaurant }) => {
+export const MenuManagement = ({ restaurant }: { restaurant: Restaurant }) => {
   const defaultItemState = {
     name: "",
     price: 0,

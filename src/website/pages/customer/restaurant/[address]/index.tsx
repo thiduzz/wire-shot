@@ -3,30 +3,49 @@ import Layout from "@components/Layout";
 import { MenuList } from "@components/Restaurant/MenuManagement";
 import { TableList } from "@components/Restaurant/TableManagement";
 import { useEthers } from "@hooks/useEthers";
-import { IRestaurant } from "@local-types/restaurant";
+import { Restaurant, ITable } from "@local-types/restaurant";
+import { ethers } from "ethers";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import React, { useCallback, useEffect, useState } from "react";
-import { RestaurantService } from "services";
+import { RestaurantService, TableService } from "services";
 
 const Restaurant: NextPage = () => {
   const router = useRouter();
-  const [restaurant, setRestaurant] = useState<IRestaurant>();
+  const { address } = router.query;
+  const [restaurant, setRestaurant] = useState<Restaurant>();
+  const [restaurantService, setRestaurantService] =
+    useState<RestaurantService>();
+  const [tableService, setTableService] = useState<TableService>();
   const { getProvider } = useEthers();
 
-  const retrieveRestaurantDetails = useCallback(async () => {
-    const { address } = router.query;
+  useEffect(() => {
     const provider = getProvider();
-    if (typeof address === "string" && provider) {
-      const contract = RestaurantService.getContract(address, provider);
-      const restaurant = await RestaurantService.getDetails(contract, provider);
-      setRestaurant(restaurant);
+    if (provider) {
+      const restaurant = new RestaurantService(provider);
+      setRestaurantService(restaurant);
+      setTableService(restaurant.tableService);
     }
   }, []);
 
   useEffect(() => {
-    retrieveRestaurantDetails();
-  }, [retrieveRestaurantDetails]);
+    if (restaurantService) retrieveRestaurantDetails();
+  }, [restaurantService]);
+
+  const retrieveRestaurantDetails = useCallback(async () => {
+    if (restaurantService && typeof address === "string") {
+      const contract = restaurantService.getContract(address);
+      const restaurant = await restaurantService.getDetails(contract);
+      setRestaurant(restaurant);
+    }
+  }, [restaurantService]);
+
+  const checkInTable = async (table: ITable) => {
+    if (tableService) {
+      const status = await tableService.checkIn(table.address);
+      console.log("Check in into table", status);
+    }
+  };
 
   return (
     <Layout>
@@ -42,7 +61,10 @@ const Restaurant: NextPage = () => {
               <div className="flex flex-col gap-20">
                 <div>
                   <h2>Select a table</h2>
-                  <TableList tables={restaurant.tables} />
+                  <TableList
+                    tables={restaurant.tables}
+                    onClickHandler={checkInTable}
+                  />
                 </div>
                 <div>
                   <h2>Menu</h2>
