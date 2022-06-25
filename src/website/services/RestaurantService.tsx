@@ -6,12 +6,14 @@ import {
 } from "@local-types/restaurant";
 import { ABIS } from "const";
 import { ethers } from "ethers";
+import { OrderService } from "./OrderService";
 import { SmartContractService } from "./SmartContractService";
 import { TableService } from "./TableService";
 
 export class RestaurantService extends SmartContractService {
   tableService: TableService;
   restaurant: Restaurant;
+  orderService?: OrderService;
 
   constructor(address: string) {
     super(ABIS.restaurant);
@@ -72,6 +74,7 @@ export class RestaurantService extends SmartContractService {
 
   /* MENU */
   retrieveMenu = async (contract: ethers.Contract): Promise<IMenuItem[]> => {
+    console.log("Contract", contract);
     const numberOfItems = await contract!.MENU_ITEM_IDS();
     const menuItemFromContract: IMenuItem[] = [];
     if (numberOfItems.toNumber() > 0) {
@@ -91,6 +94,7 @@ export class RestaurantService extends SmartContractService {
     }
     return [];
   };
+
   createMenuItem = async (item: IMenuItem): Promise<boolean> => {
     try {
       if (this.restaurant?.contract)

@@ -5,3 +5,8 @@ export interface IMenuCreateProps {
   onChange: (value: IMenuItem) => void;
   onCreation: () => void;
 }
+
+export interface IMenuListProps {
+  menu: IMenuItem[];
+  onSelect?: (item: IMenuItem) => void;
+}

@@ -27,7 +27,7 @@ const Restaurant: NextPage = () => {
   }, []);
 
   useEffect(() => {
-    if (restaurantService) checkIfUserRunningOrder();
+    if (restaurantService?.restaurant) checkIfUserRunningOrder();
   }, [restaurantService]);
 
   useEffect(() => {
@@ -40,7 +40,6 @@ const Restaurant: NextPage = () => {
     restaurant.init(() => {
       setRestaurantService(restaurant);
       setTableService(restaurant.tableService);
-      setIsLoading(false);
     });
   };
 
@@ -52,12 +51,12 @@ const Restaurant: NextPage = () => {
       if (openOrders.length > 0)
         router.push("/customer/order/" + openOrders[0]);
       else setIsLoading(false);
-    }
+    } else setIsLoading(false);
   };
 
   const checkInTable = async (table: Table) => {
     if (tableService) {
-      const status = await tableService.checkIn(table.address);
+      tableService.checkIn(table.address);
     }
   };
 

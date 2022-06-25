@@ -2,8 +2,6 @@ import Head from "@components/Head";
 import Layout from "@components/Layout";
 import { MenuManagement } from "@components/Restaurant/MenuManagement/MenuManagement";
 import { TableManagement } from "@components/Restaurant/TableManagement";
-import { useEthers } from "@hooks/useEthers";
-import { ethers } from "ethers";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";

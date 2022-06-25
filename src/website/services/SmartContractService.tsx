@@ -9,10 +9,10 @@ export class SmartContractService {
     this.abiSource = abi;
   }
 
-  getContract = (address: string): ethers.Contract => {
+  getContract = (address: string, abiSource?: any): ethers.Contract => {
     return new ethers.Contract(
       address,
-      this.abiSource.abi,
+      abiSource ?? this.abiSource.abi,
       this.provider.getSigner()
     );
   };
