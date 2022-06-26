@@ -17,7 +17,10 @@ export const MenuManagement = ({
   const { restaurant } = restaurantService;
 
   const handleCreateMenu = async () => {
-    if (restaurantService) restaurantService.createMenuItem(menuItem);
+    if (restaurantService) {
+      await restaurantService.createMenuItem(menuItem);
+      setMenuItem(defaultItemState);
+    }
   };
 
   return (

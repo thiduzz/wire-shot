@@ -61,7 +61,6 @@ export class RestaurantService extends SmartContractService {
   /* ORDER */
   getExistingOrders = async (customerAddress: string): Promise<string[]> => {
     if (this.restaurant?.tables) {
-      const matchingOrders = [];
       const busyTables = this.restaurant.tables.filter(
         (table) => table.status === ETableStatus.Busy
       );
@@ -74,7 +73,6 @@ export class RestaurantService extends SmartContractService {
 
   /* MENU */
   retrieveMenu = async (contract: ethers.Contract): Promise<IMenuItem[]> => {
-    console.log("Contract", contract);
     const numberOfItems = await contract!.MENU_ITEM_IDS();
     const menuItemFromContract: IMenuItem[] = [];
     if (numberOfItems.toNumber() > 0) {

@@ -44,7 +44,6 @@ const RestaurantIndex: NextPage = () => {
 
   const handleCreateRestaurant = useCallback(async () => {
     if (newRestaurantName.length <= 0) {
-      debugger;
       return;
     }
     const provider = getProvider();

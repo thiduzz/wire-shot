@@ -11,7 +11,7 @@ export const TableManagement = ({
   const [tableName, setTableName] = useState<string>("");
 
   const createTable = async (name: string) => {
-    restaurantService.createTable(name);
+    await restaurantService.createTable(name);
     setTableName("");
   };
 
