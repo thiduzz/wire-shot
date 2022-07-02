@@ -1,28 +1,28 @@
-import { Restaurant } from "@local-types/restaurant";
-import React, { useEffect, useState } from "react";
-import { RestaurantService, TableService } from "services";
+import { useRestaurant } from "@context/restaurant";
+import { userService } from "@hooks/useService";
+import React, { useState } from "react";
 import { TableCreate, TableList } from ".";
 
-export const TableManagement = ({
-  restaurantService,
-}: {
-  restaurantService: RestaurantService;
-}) => {
+export const TableManagement = () => {
+  const { restaurant, setRestaurant } = useRestaurant();
+  const { RestaurantService } = userService("evm");
+
   const [tableName, setTableName] = useState<string>("");
 
   const createTable = async (name: string) => {
-    await restaurantService.createTable(name);
-    setTableName("");
+    if (restaurant?.contract) {
+      await RestaurantService.addTable(name, restaurant.contract);
+      setTableName("");
+    }
   };
 
   return (
     <div>
-      {restaurantService.restaurant &&
-        restaurantService.restaurant.tables.length > 0 && (
-          <div className="flex flex-col">
-            <TableList tables={restaurantService.restaurant.tables} />
-          </div>
-        )}
+      {restaurant && restaurant.tables.length > 0 && (
+        <div className="flex flex-col">
+          <TableList tables={restaurant.tables} />
+        </div>
+      )}
       <TableCreate
         value={tableName}
         onChange={(value: string) => setTableName(value)}

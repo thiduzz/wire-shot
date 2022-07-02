@@ -1,1 +1,1 @@
-export type TABIS = "restaurant" | "table" | "order";
+export type TABIS = "restaurant" | "table" | "order" | "spawner";

@@ -2,51 +2,45 @@ import Head from "@components/Head";
 import Layout from "@components/Layout";
 import { MenuManagement } from "@components/Restaurant/MenuManagement/MenuManagement";
 import { TableManagement } from "@components/Restaurant/TableManagement";
+import { useRestaurant } from "@context/restaurant";
+import { userService } from "@hooks/useService";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
-import { RestaurantService } from "services";
+import React, { useEffect } from "react";
 
 const Restaurant: NextPage = () => {
   const router = useRouter();
   const { address } = router.query;
-
-  const [restaurantService, setRestaurantService] =
-    useState<RestaurantService>();
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const { restaurant, setRestaurant } = useRestaurant();
+  const { RestaurantService } = userService("evm");
 
   useEffect(() => {
     if (typeof address === "string") initializeRestaurant(address);
-    else setIsLoading(false);
   }, []);
 
   const initializeRestaurant = async (address: string) => {
-    const restaurant = new RestaurantService(address);
-    restaurant.init(() => {
-      setRestaurantService(restaurant);
-      setIsLoading(false);
-    });
+    setRestaurant(await RestaurantService.getRestaurant(address));
   };
 
   return (
-    <Layout isLoading={isLoading}>
+    <Layout isLoading={!restaurant}>
       <Head
         title="Wireshot - Restaurant"
         description="Your Restaurant Payment solution"
       />
-      {restaurantService?.restaurant && (
+      {restaurant && (
         <div className="page-content justify-center">
           <div className="hero flex flex-col items-center justify-center">
             <div className="flex flex-col gap-8">
-              <h1>{restaurantService.restaurant.name}</h1>
+              <h1>{restaurant.name}</h1>
               <div className="flex flex-col gap-20">
                 <div>
                   <h2>Table Management</h2>
-                  <TableManagement restaurantService={restaurantService} />
+                  <TableManagement />
                 </div>
                 <div>
                   <h2>Menu Management</h2>
-                  <MenuManagement restaurantService={restaurantService} />
+                  <MenuManagement />
                 </div>
               </div>
             </div>

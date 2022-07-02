@@ -1,24 +1,21 @@
+import { useRestaurant } from "@context/restaurant";
+import { userService } from "@hooks/useService";
 import { IMenuItem } from "@local-types/restaurant";
 import React, { useState } from "react";
-import { RestaurantService } from "services";
 import { MenuCreate, MenuList } from ".";
 
-export const MenuManagement = ({
-  restaurantService,
-}: {
-  restaurantService: RestaurantService;
-}) => {
+export const MenuManagement = () => {
   const defaultItemState = {
     name: "",
     price: 0,
   };
   const [menuItem, setMenuItem] = useState<IMenuItem>(defaultItemState);
-
-  const { restaurant } = restaurantService;
+  const { restaurant } = useRestaurant();
+  const { RestaurantService } = userService("evm");
 
   const handleCreateMenu = async () => {
-    if (restaurantService) {
-      await restaurantService.createMenuItem(menuItem);
+    if (restaurant?.contract) {
+      await RestaurantService.addMenuItem(menuItem, restaurant.contract);
       setMenuItem(defaultItemState);
     }
   };
