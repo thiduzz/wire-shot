@@ -1,72 +1,48 @@
-import type { NextPage } from "next";
-import Layout from "@components/Layout";
-import React, { useCallback, useEffect, useState } from "react";
 import Head from "@components/Head";
-import { useEthers } from "@hooks/useEthers";
+import Layout from "@components/Layout";
 import { useProfile } from "@context/profile";
-import { ethers } from "ethers";
-import RestaurantSpawnerAbi from "@wireshot/hardhat/artifacts/contracts/RestaurantSpawner.sol/RestaurantSpawner.json";
-import RestaurantAbi from "@wireshot/hardhat/artifacts/contracts/Restaurant.sol/Restaurant.json";
+import { useRestaurant } from "@context/restaurant";
+import { userService } from "@hooks/useService";
+import type { NextPage } from "next";
 import Link from "next/link";
+import React, { useCallback, useEffect, useState } from "react";
 import { IoHomeOutline } from "react-icons/io5";
 
 const RestaurantIndex: NextPage = () => {
   const { profile } = useProfile();
+  const { restaurants, setRestaurants } = useRestaurant();
+  const { RestaurantService, SmartContractService } = userService("evm");
 
-  const [restaurants, setRestaurants] = useState<Array<any>>([]);
   const [newRestaurantName, setNewRestaurantName] = useState<string>("");
-  const { getProvider } = useEthers();
-  const spawnerAddress = process.env.NEXT_PUBLIC_SPAWNER_CONTRACT_ADDRESS ?? "";
-  const handleLoadRestaurants = useCallback(async () => {
-    const provider = getProvider();
-    if (provider) {
-      const spawnerContract = new ethers.Contract(
-        spawnerAddress,
-        RestaurantSpawnerAbi.abi,
-        provider.getSigner()
-      );
-      const result = await spawnerContract.getRestaurants(profile?.address);
-      if (result) {
-        const arr: Array<any> = [];
-        for (const index in result) {
-          const restaurantContract = new ethers.Contract(
-            result[index],
-            RestaurantAbi.abi,
-            provider.getSigner()
-          );
-          const restaurantName = await restaurantContract.name();
-          arr.push({ address: result[index], name: restaurantName });
-        }
-        setRestaurants(arr);
-      }
-    }
-  }, []);
 
-  const handleCreateRestaurant = useCallback(async () => {
+  const spawnerAddress = process.env.NEXT_PUBLIC_SPAWNER_CONTRACT_ADDRESS ?? "";
+
+  useEffect(() => {
+    retrieveRestaurants();
+  }, [profile]);
+
+  const retrieveRestaurants = async () => {
+    if (profile)
+      setRestaurants(
+        await RestaurantService.getRestaurants(
+          spawnerAddress,
+          profile.address,
+          SmartContractService.getProvider()
+        )
+      );
+  };
+
+  const handleCreateRestaurant = async (): Promise<void> => {
     if (newRestaurantName.length <= 0) {
       return;
     }
-    const provider = getProvider();
-    if (provider) {
-      try {
-        const spawnerContract = new ethers.Contract(
-          spawnerAddress,
-          RestaurantSpawnerAbi.abi,
-          provider.getSigner()
-        );
-        const restaurantAddress = await spawnerContract.addRestaurant(
-          newRestaurantName
-        );
-        setNewRestaurantName("");
-      } catch (e) {
-        console.log(e);
-      }
-    }
-  }, [newRestaurantName]);
-
-  useEffect(() => {
-    handleLoadRestaurants();
-  }, [handleLoadRestaurants]);
+    const response = await RestaurantService.addRestaurant(
+      spawnerAddress,
+      newRestaurantName,
+      SmartContractService.getProvider()
+    );
+    if (response) setNewRestaurantName("");
+  };
 
   const handleChangeName = useCallback((e) => {
     setNewRestaurantName(e.target.value);
@@ -80,7 +56,7 @@ const RestaurantIndex: NextPage = () => {
       />
       <div className="page-content justify-center">
         <div className="hero flex flex-col items-center justify-center">
-          {restaurants.length > 0 && (
+          {restaurants && restaurants.length > 0 && (
             <div className="flex flex-row flex-wrap justify-start gap-3.5">
               {restaurants.map((restaurant) => (
                 <Link

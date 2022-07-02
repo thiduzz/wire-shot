@@ -1,28 +1,20 @@
 import { ethers } from "ethers";
+import { ISmartContractService } from "./SmartContractService.types";
 
-export class SmartContractService {
-  provider: ethers.providers.Web3Provider;
-  abiSource: any;
+const getContract = (address: string, abiSource: string): ethers.Contract => {
+  return new ethers.Contract(address, abiSource, getProvider().getSigner());
+};
 
-  constructor(abi: any) {
-    this.provider = this.getProvider();
-    this.abiSource = abi;
+const getProvider = (): ethers.providers.Web3Provider => {
+  const { ethereum } = window as any;
+  if (!ethereum) {
+    throw Error("Provider could not be set");
   }
 
-  getContract = (address: string, abiSource?: any): ethers.Contract => {
-    return new ethers.Contract(
-      address,
-      abiSource ?? this.abiSource.abi,
-      this.provider.getSigner()
-    );
-  };
+  return new ethers.providers.Web3Provider(window.ethereum);
+};
 
-  private getProvider = (): ethers.providers.Web3Provider => {
-    const { ethereum } = window as any;
-    if (!ethereum) {
-      throw Error("Provider could not be set");
-    }
-
-    return new ethers.providers.Web3Provider(window.ethereum);
-  };
-}
+export const SmartContractService: ISmartContractService = {
+  getContract,
+  getProvider,
+};
