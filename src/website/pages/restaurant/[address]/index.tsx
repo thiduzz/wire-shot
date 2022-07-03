@@ -6,29 +6,39 @@ import { useRestaurant } from "@context/restaurant";
 import { userService } from "@hooks/useService";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 
 const Restaurant: NextPage = () => {
   const router = useRouter();
   const { address } = router.query;
-  const { restaurant, setRestaurant } = useRestaurant();
+  const { restaurant, setRestaurant, resetRestaurant } = useRestaurant();
   const { RestaurantService } = userService("evm");
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
     if (typeof address === "string") initializeRestaurant(address);
+    return () => {
+      resetRestaurant();
+    };
   }, []);
+
+  useEffect(() => {
+    if (restaurant && restaurant.name) {
+      setIsLoading(false);
+    }
+  }, [restaurant]);
 
   const initializeRestaurant = async (address: string) => {
     setRestaurant(await RestaurantService.getRestaurant(address));
   };
 
   return (
-    <Layout isLoading={!restaurant}>
+    <Layout isLoading={isLoading}>
       <Head
         title="Wireshot - Restaurant"
         description="Your Restaurant Payment solution"
       />
-      {restaurant && (
+      {!isLoading && restaurant && (
         <div className="page-content justify-center">
           <div className="hero flex flex-col items-center justify-center">
             <div className="flex flex-col gap-8">

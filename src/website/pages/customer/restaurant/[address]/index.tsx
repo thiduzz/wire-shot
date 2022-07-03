@@ -13,22 +13,27 @@ import React, { useEffect, useState } from "react";
 const Restaurant: NextPage = () => {
   const router = useRouter();
   const { address } = router.query;
-  const { restaurant, setRestaurant } = useRestaurant();
+  const { restaurant, setRestaurant, resetRestaurant } = useRestaurant();
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const { RestaurantService, TableService } = userService("evm");
   const { profile } = useProfile();
 
   useEffect(() => {
     if (typeof address === "string") initializeRestaurant(address);
-    else setIsLoading(false);
+    else {
+      console.log("else triggered");
+      setIsLoading(false);
+    }
+    return () => {
+      resetRestaurant();
+    };
   }, []);
 
   useEffect(() => {
-    checkIfUserRunningOrder();
+    if (restaurant?.name) checkIfUserRunningOrder();
   }, [restaurant]);
 
   const initializeRestaurant = async (address: string) => {
-    console.log("Getting restaurant", address);
     setRestaurant(await RestaurantService.getRestaurant(address));
   };
 
@@ -38,11 +43,10 @@ const Restaurant: NextPage = () => {
         profile.address,
         restaurant.tables
       );
-      console.log("open orders", openOrders);
-      if (openOrders.length > 0)
+      if (openOrders.length > 0) {
         router.push("/customer/order/" + openOrders[0]);
-      else setIsLoading(false);
-    } else setIsLoading(false);
+      } else setIsLoading(false);
+    }
   };
 
   const checkInTable = async (table: Table) => {

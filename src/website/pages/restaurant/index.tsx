@@ -12,7 +12,7 @@ const RestaurantIndex: NextPage = () => {
   const { profile } = useProfile();
   const { restaurants, setRestaurants } = useRestaurant();
   const { RestaurantService, SmartContractService } = userService("evm");
-
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [newRestaurantName, setNewRestaurantName] = useState<string>("");
 
   const spawnerAddress = process.env.NEXT_PUBLIC_SPAWNER_CONTRACT_ADDRESS ?? "";
@@ -21,15 +21,21 @@ const RestaurantIndex: NextPage = () => {
     retrieveRestaurants();
   }, [profile]);
 
+  useEffect(() => {
+    if (restaurants && restaurants.length > 0) setIsLoading(false);
+  }, [restaurants]);
+
   const retrieveRestaurants = async () => {
-    if (profile)
-      setRestaurants(
-        await RestaurantService.getRestaurants(
-          spawnerAddress,
-          profile.address,
-          SmartContractService.getProvider()
-        )
+    if (profile) {
+      const fetchedRestaurants = await RestaurantService.getRestaurants(
+        spawnerAddress,
+        profile.address,
+        SmartContractService.getProvider()
       );
+      if (fetchedRestaurants && fetchedRestaurants.length > 0)
+        setRestaurants(fetchedRestaurants);
+      else setIsLoading(false);
+    }
   };
 
   const handleCreateRestaurant = async (): Promise<void> => {
@@ -49,7 +55,7 @@ const RestaurantIndex: NextPage = () => {
   }, []);
 
   return (
-    <Layout>
+    <Layout isLoading={isLoading}>
       <Head
         title="Wireshot - Restaurant"
         description="Your Restaurant Payment solution"

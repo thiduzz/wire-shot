@@ -79,7 +79,7 @@ const CustomerIndex: NextPage = () => {
   // }, [isLoading, offset]);
 
   return (
-    <Layout>
+    <Layout isLoading={!restaurants || restaurants.length < 1}>
       <Head
         title="Wireshot - Restaurants List"
         description="Your Restaurant Payment solution"

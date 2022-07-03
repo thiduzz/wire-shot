@@ -27,7 +27,6 @@ interface IOrderContext {
   };
   menu: IMenuItem[];
   orderItems: number[];
-  tableName: string;
   setContract: Dispatch<SetStateAction<ethers.Contract | null>>;
   setRestaurant: Dispatch<SetStateAction<IBasicInfo>>;
   setMenu: Dispatch<SetStateAction<IMenuItem[]>>;
@@ -36,6 +35,7 @@ interface IOrderContext {
   getRestaurantAndTableData: (
     contractService: ISmartContractService
   ) => Promise<void>;
+  resetOrder: () => void;
 }
 
 const throwMissingProvider: () => void = () => {
@@ -51,6 +51,7 @@ const initialState: IOrderContext = {
   setRestaurant: throwMissingProvider,
   setMenu: throwMissingProvider,
   setTotalPrice: throwMissingProvider,
+  resetOrder: throwMissingProvider,
   restaurant: {
     contract: null,
     name: "",
@@ -61,14 +62,16 @@ const initialState: IOrderContext = {
   },
   menu: [],
   orderItems: [],
-  tableName: "",
 };
 
 export const OrderContext = createContext<IOrderContext>(initialState);
 
+/* Wouldnt it make more sense to have one big state because we do not need to update that often single "setXY()" */
 export const OrderProvider = ({ children }: { children?: ReactNode }) => {
   const [contract, setContract] = useState<ethers.Contract | null>(null);
   const [totalPrice, setTotalPrice] = useState<number>(0);
+  const [menu, setMenu] = useState<IMenuItem[]>([]);
+  const [orderItems, setOrderItems] = useState<number[]>([]);
   const [restaurant, setRestaurant] = useState<{
     contract: ethers.Contract | null;
     name: string;
@@ -104,9 +107,13 @@ export const OrderProvider = ({ children }: { children?: ReactNode }) => {
     }
   };
 
-  const [tableName, setTableName] = useState<string>("");
-  const [menu, setMenu] = useState<IMenuItem[]>([]);
-  const [orderItems, setOrderItems] = useState<number[]>([]);
+  const resetOrder = (): void => {
+    setTotalPrice(initialState.totalPrice);
+    setContract(initialState.contract);
+    setMenu(initialState.menu);
+    setTable(initialState.table);
+    setOrderItems(initialState.orderItems);
+  };
 
   const state = {
     contract,
@@ -118,12 +125,11 @@ export const OrderProvider = ({ children }: { children?: ReactNode }) => {
     menu,
     totalPrice,
     setMenu,
-    tableName,
-    setTableName,
     setTotalPrice,
     orderItems,
     setOrderItems,
     getRestaurantAndTableData,
+    resetOrder,
   };
 
   return (

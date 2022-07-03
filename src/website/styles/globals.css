@@ -4,6 +4,7 @@
 @import "base.css";
 @import "content.css";
 @import "animations.css";
+@import "loadingspinner.css";
 /*Cookie consent UI*/
 @import "consent.css";
 

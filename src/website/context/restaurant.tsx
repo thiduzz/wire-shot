@@ -10,12 +10,14 @@ import {
 
 interface IRestaurantContext {
   restaurant: Restaurant | undefined;
-  loading: boolean;
+  isLoading: boolean;
   restaurants: { address: string; name: string }[] | undefined;
   setRestaurants: Dispatch<
     SetStateAction<{ address: string; name: string }[] | undefined>
   >;
   setRestaurant: Dispatch<SetStateAction<Restaurant | undefined>>;
+  setIsLoading: Dispatch<SetStateAction<boolean>>;
+  resetRestaurant: () => void;
 }
 
 const throwMissingProvider: () => void = () => {
@@ -25,6 +27,8 @@ const throwMissingProvider: () => void = () => {
 const initialState: IRestaurantContext = {
   setRestaurants: throwMissingProvider,
   setRestaurant: throwMissingProvider,
+  resetRestaurant: throwMissingProvider,
+  setIsLoading: throwMissingProvider,
   restaurant: {
     menu: [],
     tables: [],
@@ -32,7 +36,7 @@ const initialState: IRestaurantContext = {
     address: "",
   },
   restaurants: [],
-  loading: true,
+  isLoading: true,
 };
 
 export const RestaurantContext =
@@ -43,14 +47,19 @@ export const RestaurantProvider = ({ children }: { children?: ReactNode }) => {
   const [restaurants, setRestaurants] = useState<
     { address: string; name: string }[] | undefined
   >([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  const resetRestaurant = (): void => {
+    setRestaurant(initialState.restaurant);
+  };
   const state = {
     restaurant,
-    loading,
+    isLoading,
+    setIsLoading,
     setRestaurant,
-    setLoading,
     restaurants,
     setRestaurants,
+    resetRestaurant,
   };
 
   return (

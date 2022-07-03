@@ -7,7 +7,7 @@ import { IMenuItem } from "@local-types/restaurant";
 import { ABIS } from "const";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { IoEllipseOutline } from "react-icons/io5";
 
 const enrichtOrderedItemsWithInfo = (
@@ -35,12 +35,17 @@ const Order: NextPage = () => {
     setOrderItems,
     setTotalPrice,
     totalPrice,
+    resetOrder,
   } = useOrder();
   const { OrderService, SmartContractService, RestaurantService } =
     userService("evm");
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
     if (typeof address === "string") initializeContract(address);
+    return () => {
+      resetOrder();
+    };
   }, []);
 
   useEffect(() => {
@@ -48,7 +53,9 @@ const Order: NextPage = () => {
   }, [contract]);
 
   useEffect(() => {
-    if (restaurant.contract) getMenuAndOrderedItems();
+    if (restaurant.contract) {
+      getMenuAndOrderedItems();
+    }
   }, [restaurant.contract]);
 
   const initializeContract = async (contractAddress: string) => {
@@ -68,6 +75,7 @@ const Order: NextPage = () => {
       setMenu(await RestaurantService.getMenu(restaurant.contract));
       setOrderItems(await OrderService.getOrderedItems(contract));
       getPrice();
+      setIsLoading(false);
     }
   };
 
@@ -93,7 +101,7 @@ const Order: NextPage = () => {
   };
 
   return (
-    <Layout isLoading={false}>
+    <Layout isLoading={isLoading}>
       <Head
         title="Wireshot - Restaurant"
         description="Your Restaurant Payment solution"
