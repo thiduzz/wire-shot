@@ -108,14 +108,46 @@
     "outputs": [
       {
         "internalType": "uint256",
-        "name": "",
+        "name": "tableId",
         "type": "uint256"
       },
       {
         "internalType": "string",
-        "name": "",
+        "name": "tableName",
         "type": "string"
       },
+      {
+        "internalType": "enum Table.TableStatus",
+        "name": "tableStatus",
+        "type": "uint8"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_potentialCustomer",
+        "type": "address"
+      }
+    ],
+    "name": "getOpenOrderAddress",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "name",
+    "outputs": [
       {
         "internalType": "string",
         "name": "",

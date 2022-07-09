@@ -102,6 +102,19 @@
   },
   {
     "inputs": [],
+    "name": "getCustomerAddress",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "getOrderItems",
     "outputs": [
       {
@@ -116,7 +129,13 @@
   {
     "inputs": [],
     "name": "payOrder",
-    "outputs": [],
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "success",
+        "type": "bool"
+      }
+    ],
     "stateMutability": "payable",
     "type": "function"
   },
@@ -126,6 +145,19 @@
     "outputs": [
       {
         "internalType": "contract Restaurant",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "table",
+    "outputs": [
+      {
+        "internalType": "contract Table",
         "name": "",
         "type": "address"
       }

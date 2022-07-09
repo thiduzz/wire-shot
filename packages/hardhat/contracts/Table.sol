@@ -6,7 +6,6 @@ import "./Order.sol";
 import "./Restaurant.sol";
 
 contract Table {
-
     using Counters for Counters.Counter;
 
     enum TableStatus {
@@ -18,16 +17,15 @@ contract Table {
     Counters.Counter private ORDER_IDS;
 
     uint256 private id;
-    string private name;
+    string public name;
     TableStatus private status;
     Restaurant public restaurant;
     Order private order;
     address private ownerAddress;
-   
+
     address[] private orderHistory;
     event NotEnoughFund(uint256 amount, uint256 price);
     event test_value(uint256 price, uint256 value);
-    
 
     modifier IsRestaurant() {
         require(
@@ -53,7 +51,12 @@ contract Table {
         _;
     }
 
-    constructor(address _ownerAddress, address _restaurantAddress, uint256 _id, string memory _name) {
+    constructor(
+        address _ownerAddress,
+        address _restaurantAddress,
+        uint256 _id,
+        string memory _name
+    ) {
         ownerAddress = _ownerAddress;
         restaurant = Restaurant(payable(_restaurantAddress));
         id = _id;
@@ -62,23 +65,23 @@ contract Table {
         ORDER_IDS.increment();
     }
 
-    
     function checkIn() public returns (bool success) {
-        if(status == TableStatus.Free) {
-        uint256 currentId = ORDER_IDS.current();
-        order = new Order(
-            payable(address(restaurant)),
-            msg.sender, 
-            currentId
-        );
-        orderHistory.push(address(order));
-        ORDER_IDS.increment();
-        setTableAsBusy();
-        return true;
+        if (status == TableStatus.Free) {
+            uint256 currentId = ORDER_IDS.current();
+            order = new Order(
+                payable(address(restaurant)),
+                msg.sender,
+                currentId
+            );
+            orderHistory.push(address(order));
+            ORDER_IDS.increment();
+            setTableAsBusy();
+            return true;
         } else {
             return false;
         }
     }
+
     /* IsRestaurant */
     function setTableAsClosed() public {
         status = TableStatus.Closed;
@@ -105,16 +108,30 @@ contract Table {
         return address(order);
     }
 
-    function getDetails() public view returns (uint256,  string memory,  string memory){
-        string memory tableStatus = "Free";
-        if(status == TableStatus.Busy) {
-            tableStatus = "Busy";
-        } else if (status == TableStatus.Closed){
-            tableStatus = "Closed";
+    /* Could be sitting on restaurant level */
+    function getOpenOrderAddress(address _potentialCustomer)
+        public
+        view
+        returns (address)
+    {
+        address customerAddress = order.getCustomerAddress();
+        if (customerAddress == _potentialCustomer) {
+            return address(order);
         }
-        string memory tableName = name;
-        return (id, tableName, tableStatus);
     }
 
-
+    function getDetails()
+        public
+        view
+        returns (
+            uint256 tableId,
+            string memory tableName,
+            TableStatus tableStatus
+        )
+    {
+        tableStatus = status;
+        tableName = name;
+        tableId = id;
+        return (tableId, tableName, tableStatus);
+    }
 }

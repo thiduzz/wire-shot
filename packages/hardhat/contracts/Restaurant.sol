@@ -18,8 +18,8 @@ contract Restaurant {
     address public owner;
     address[] private tableAddresses;
     TableReference[] public tableList;
-    mapping(uint256 => MenuItem) private menu;
-    Counters.Counter private MENU_ITEM_IDS;
+    mapping(uint256 => MenuItem) public menu;
+    Counters.Counter public MENU_ITEM_IDS;
     Counters.Counter private TABLE_IDS;
 
     struct MenuItem {

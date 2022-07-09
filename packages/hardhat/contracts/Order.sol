@@ -5,8 +5,7 @@ import "./Restaurant.sol";
 import "./Table.sol";
 
 contract Order {
-
-    struct OrderItem{
+    struct OrderItem {
         uint256 _id;
         uint256 price;
         uint256 quantity;
@@ -21,18 +20,22 @@ contract Order {
     event PaidOrder(uint256 price, uint256[] orderItems);
 
     Restaurant public restaurant;
-    Table private table;
+    Table public table;
     address private customerAddress;
     uint256[] private orderItems;
     uint256 private id;
     uint256 private paidPrice;
     OrderStatus private status;
-    
-    event ClosedOrder(address orderAddress,uint256[] orderItems, uint256 price);
+
+    event ClosedOrder(
+        address orderAddress,
+        uint256[] orderItems,
+        uint256 price
+    );
 
     modifier IsCustomer() {
         require(
-           msg.sender == customerAddress,
+            msg.sender == customerAddress,
             "You do not have the permission to perform this action."
         );
         _;
@@ -40,7 +43,7 @@ contract Order {
 
     modifier IsTable() {
         require(
-           msg.sender == address(table),
+            msg.sender == address(table),
             "You do not have the permission to perform this action."
         );
         _;
@@ -54,7 +57,11 @@ contract Order {
         _;
     }
 
-    constructor(address payable _restaurantAddress, address _customerAddress, uint256 _id) payable {
+    constructor(
+        address payable _restaurantAddress,
+        address _customerAddress,
+        uint256 _id
+    ) payable {
         restaurant = Restaurant(payable(_restaurantAddress));
         table = Table(payable(msg.sender));
         customerAddress = _customerAddress;
@@ -63,11 +70,14 @@ contract Order {
     }
 
     fallback() external payable {}
-    
+
     /* IsCustomer */
-    function addMenuItem(uint256[] memory _orderIds) public returns (bool success){
-        if(_orderIds.length > 0) {
-            for (uint i=0; i < _orderIds.length; i++) {
+    function addMenuItem(uint256[] memory _orderIds)
+        public
+        returns (bool success)
+    {
+        if (_orderIds.length > 0) {
+            for (uint256 i = 0; i < _orderIds.length; i++) {
                 orderItems.push(_orderIds[i]);
             }
             status = OrderStatus.Pending;
@@ -76,11 +86,11 @@ contract Order {
             return false;
         }
     }
+
     /* IsCustomer IsTable IsRestaurant */
-    function getOrderItems()  public view returns (uint256[] memory)  {
+    function getOrderItems() public view returns (uint256[] memory) {
         return orderItems;
     }
-
 
     function calculatePrice() public view returns (uint256) {
         uint256 price = restaurant.calculatePrice(orderItems);
@@ -89,12 +99,17 @@ contract Order {
 
     /* IsCustomer IsTable IsRestaurant */
     /* Not sure if we need to wait until payment is confirmed?  */
-    function payOrder() payable public {
+    function payOrder() public payable returns (bool success) {
         uint256 price = restaurant.calculatePrice(orderItems);
-        require(msg.value >= price, "Your value does not cover the price");
+        require(msg.value >= price * 1e18, "Your value does not cover the price");
         closeOrder(price);
         transferFundsToRestaurant();
         table.setTableAsFree();
+        return true;
+    }
+
+    function getCustomerAddress() external view returns (address) {
+        return customerAddress;
     }
 
     function transferFundsToRestaurant() internal {
