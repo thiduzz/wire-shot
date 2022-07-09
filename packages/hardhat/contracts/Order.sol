@@ -101,7 +101,7 @@ contract Order {
     /* Not sure if we need to wait until payment is confirmed?  */
     function payOrder() public payable returns (bool success) {
         uint256 price = restaurant.calculatePrice(orderItems);
-        require(msg.value >= price * 1e18, "Your value does not cover the price");
+        require(msg.value >= (price * 1e18), "Your value does not cover the price");
         closeOrder(price);
         transferFundsToRestaurant();
         table.setTableAsFree();

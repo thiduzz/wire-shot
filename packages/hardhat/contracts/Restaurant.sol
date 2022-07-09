@@ -24,6 +24,7 @@ contract Restaurant {
 
     struct MenuItem {
         uint256 id;
+        string category;
         string name;
         uint price;
     }
@@ -53,10 +54,11 @@ contract Restaurant {
     function deposit() payable public {
     }
 
-    function addMenuItem(string memory _name, uint256 _price) public IsOwner returns (bool success) {
+    function addMenuItem(string memory _name,string memory _category, uint256 _price) public IsOwner returns (bool success) {
         uint256 currentId = MENU_ITEM_IDS.current();
         menu[currentId] = MenuItem(
             currentId,
+            _category,
             _name,
             _price
         );
@@ -110,7 +112,7 @@ contract Restaurant {
 
     function getMenuItem(uint256 _id) public view returns (uint256 itemId,  string memory itemName,  uint256 itemPrice) {
         require(_id < MENU_ITEM_IDS.current(), "There is no item for this id");
-        return (menu[_id].id, menu[_id].name, menu[_id].price);
+        return (menu[_id].id, menu[_id].name,menu[_id].category, menu[_id].price);
     }
 
     function getAllTableAddresses() public view returns (address[] memory values) {
