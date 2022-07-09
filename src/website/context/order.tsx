@@ -1,4 +1,4 @@
-import { userService } from "@hooks/useService";
+import { IBasket } from "@local-types/order";
 import { IMenuItem } from "@local-types/restaurant";
 import { ABIS } from "const";
 import { ethers } from "ethers";
@@ -10,7 +10,6 @@ import {
   useContext,
   useState,
 } from "react";
-import { RestaurantServiceAbstract } from "services/providers/abstracts";
 import { ISmartContractService } from "services/SmartContractService.types";
 
 interface IBasicInfo {
@@ -26,16 +25,23 @@ interface IOrderContext {
     name: string;
   };
   menu: IMenuItem[];
+  basket: {
+    price: number;
+    items: IMenuItem[];
+  };
   orderItems: number[];
   setContract: Dispatch<SetStateAction<ethers.Contract | null>>;
   setRestaurant: Dispatch<SetStateAction<IBasicInfo>>;
   setMenu: Dispatch<SetStateAction<IMenuItem[]>>;
+  setBasket: Dispatch<SetStateAction<IBasket>>;
   setOrderItems: Dispatch<SetStateAction<number[]>>;
   setTotalPrice: Dispatch<SetStateAction<number>>;
   getRestaurantAndTableData: (
     contractService: ISmartContractService
   ) => Promise<void>;
   resetOrder: () => void;
+  resetBasket: () => void;
+  calculateBasketPrice: (items: IMenuItem[]) => number;
 }
 
 const throwMissingProvider: () => void = () => {
@@ -46,12 +52,15 @@ const initialState: IOrderContext = {
   totalPrice: 0,
   contract: null,
   getRestaurantAndTableData: async () => {},
+  calculateBasketPrice: () => 0,
   setContract: throwMissingProvider,
   setOrderItems: throwMissingProvider,
   setRestaurant: throwMissingProvider,
   setMenu: throwMissingProvider,
+  setBasket: throwMissingProvider,
   setTotalPrice: throwMissingProvider,
   resetOrder: throwMissingProvider,
+  resetBasket: throwMissingProvider,
   restaurant: {
     contract: null,
     name: "",
@@ -61,6 +70,10 @@ const initialState: IOrderContext = {
     name: "",
   },
   menu: [],
+  basket: {
+    price: 0,
+    items: [],
+  },
   orderItems: [],
 };
 
@@ -71,6 +84,10 @@ export const OrderProvider = ({ children }: { children?: ReactNode }) => {
   const [contract, setContract] = useState<ethers.Contract | null>(null);
   const [totalPrice, setTotalPrice] = useState<number>(0);
   const [menu, setMenu] = useState<IMenuItem[]>([]);
+  const [basket, setBasket] = useState<IBasket>({
+    price: 0,
+    items: [],
+  });
   const [orderItems, setOrderItems] = useState<number[]>([]);
   const [restaurant, setRestaurant] = useState<{
     contract: ethers.Contract | null;
@@ -107,6 +124,16 @@ export const OrderProvider = ({ children }: { children?: ReactNode }) => {
     }
   };
 
+  const calculateBasketPrice = (items: IMenuItem[]) => {
+    return items.reduce((variantsSum, variantItem) => {
+      return variantsSum + variantItem.price;
+    }, 0);
+  };
+
+  const resetBasket = () => {
+    setBasket(initialState.basket);
+  };
+
   const resetOrder = (): void => {
     setTotalPrice(initialState.totalPrice);
     setContract(initialState.contract);
@@ -130,6 +157,10 @@ export const OrderProvider = ({ children }: { children?: ReactNode }) => {
     setOrderItems,
     getRestaurantAndTableData,
     resetOrder,
+    setBasket,
+    resetBasket,
+    basket,
+    calculateBasketPrice,
   };
 
   return (

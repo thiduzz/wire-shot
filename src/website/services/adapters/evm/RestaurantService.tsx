@@ -73,18 +73,24 @@ const addRestaurant = async (
 };
 
 /* TABLE */
-const addTable = async (
-  name: string,
+const addTables = async (
+  names: string[],
   contract: ethers.Contract
 ): Promise<boolean> => {
-  try {
-    console.log("contract", contract);
-    await contract.addTable(name);
-    return true;
-  } catch (e) {
-    console.log(e);
-    return false;
-  }
+  console.log("Looping with names", names);
+  return Promise.all(
+    names.map(async (name) => {
+      return contract.addTable(name);
+    })
+  )
+    .then((data: any) => {
+      console.log("All tables created", data);
+      return data;
+    })
+    .catch((err: any) => {
+      console.log("Error while getting matching orders for customer", err);
+      throw Error();
+    });
 };
 
 /* ORDER */
@@ -111,8 +117,9 @@ const getMenu = async (contract: ethers.Contract): Promise<IMenuItem[]> => {
       if (singleItem) {
         menuItemFromContract.push({
           id: singleItem[0].toNumber(),
-          name: singleItem[1],
-          price: singleItem[2].toNumber(),
+          category: singleItem[1],
+          name: singleItem[2],
+          price: singleItem[3].toNumber(),
         });
       }
     }
@@ -123,17 +130,22 @@ const getMenu = async (contract: ethers.Contract): Promise<IMenuItem[]> => {
   return [];
 };
 
-const addMenuItem = async (
-  item: IMenuItem,
+const addMenuItems = async (
+  items: IMenuItem[],
   contract: ethers.Contract
 ): Promise<boolean> => {
-  try {
-    await contract.addMenuItem(item.name, item.price);
-    return true;
-  } catch (e) {
-    console.log(e);
-    return false;
-  }
+  return Promise.all(
+    items.map(async (item) => {
+      return contract.addMenuItem(item.name, item.category, item.price);
+    })
+  )
+    .then((data: any) => {
+      return data;
+    })
+    .catch((err: any) => {
+      console.log("Error while getting matching orders for customer", err);
+      throw Error();
+    });
 };
 
 const getMatchingOrders = async (
@@ -169,6 +181,6 @@ export const RestaurantService: RestaurantServiceAbstract<RestaurantServiceAbstr
     addRestaurant,
     getMenu,
     getCustomerOrders,
-    addMenuItem,
-    addTable,
+    addMenuItems,
+    addTables,
   };

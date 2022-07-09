@@ -41,7 +41,7 @@ export const TableList = ({ tables, onClickHandler }: TableListProps) => {
           </div>
         ))}
       </div>
-      {tables.length <= 0 && <span>No tables defined...</span>}
+      {tables.length <= 0 && <span>No tables!</span>}
     </>
   );
 };

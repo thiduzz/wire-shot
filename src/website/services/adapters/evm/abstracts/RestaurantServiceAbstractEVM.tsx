@@ -18,9 +18,9 @@ export abstract class RestaurantServiceAbstractEVM {
     customerAddress: string,
     tables: Table[]
   ) => Promise<string[]>;
-  abstract addMenuItem: (
-    item: IMenuItem,
+  abstract addMenuItems: (
+    items: IMenuItem[],
     contract: ethers.Contract
   ) => Promise<boolean>;
-  abstract addTable: (name: string, contract: ethers.Contract) => any;
+  abstract addTables: (names: string[], contract: ethers.Contract) => any;
 }

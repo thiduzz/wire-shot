@@ -5,7 +5,7 @@ import { useRestaurant } from "@context/restaurant";
 import { userService } from "@hooks/useService";
 import type { NextPage } from "next";
 import Link from "next/link";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { IoHomeOutline } from "react-icons/io5";
 
 const CustomerIndex: NextPage = () => {
@@ -13,7 +13,8 @@ const CustomerIndex: NextPage = () => {
   // const [offset, setOffset] = useState(0);
   // const [hasMore, setHasMore] = useState(false);
   const { RestaurantService, SmartContractService } = userService("evm");
-  const { restaurants, setRestaurants } = useRestaurant();
+  const { restaurants, setRestaurants, isLoading, setIsLoading } =
+    useRestaurant();
   const { profile } = useProfile();
   const spawnerAddress = process.env.NEXT_PUBLIC_SPAWNER_CONTRACT_ADDRESS ?? "";
 
@@ -22,6 +23,7 @@ const CustomerIndex: NextPage = () => {
   }, []);
 
   const retrieveRestaurants = async () => {
+    setIsLoading(true);
     if (profile)
       setRestaurants(
         await RestaurantService.getRestaurants(
@@ -30,6 +32,7 @@ const CustomerIndex: NextPage = () => {
           SmartContractService.getProvider()
         )
       );
+    setIsLoading(false);
   };
 
   // const handleLoadRestaurants = useCallback(async () => {
@@ -79,14 +82,14 @@ const CustomerIndex: NextPage = () => {
   // }, [isLoading, offset]);
 
   return (
-    <Layout isLoading={!restaurants || restaurants.length < 1}>
+    <Layout isLoading={isLoading}>
       <Head
         title="Wireshot - Restaurants List"
         description="Your Restaurant Payment solution"
       />
       <div className="page-content justify-center">
         <div className="hero flex flex-col items-center justify-center">
-          {restaurants && restaurants.length > 0 && (
+          {restaurants && restaurants.length > 0 ? (
             <div className="flex flex-row flex-wrap justify-start gap-3.5">
               {restaurants.map((restaurant) => (
                 <Link
@@ -101,6 +104,8 @@ const CustomerIndex: NextPage = () => {
                 </Link>
               ))}
             </div>
+          ) : (
+            <div>No restauraunts yet</div>
           )}
           {/* {!isLoading && hasMore && (
             <button

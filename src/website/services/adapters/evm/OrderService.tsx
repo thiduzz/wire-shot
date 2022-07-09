@@ -7,7 +7,7 @@ const placeOrder = async (
   items: number[],
   contract: ethers.Contract
 ): Promise<boolean> => {
-  const response = await contract.addMenuItem(items);
+  await contract.addMenuItem(items);
   return true;
 };
 
@@ -17,11 +17,12 @@ const calculatePrice = async (contract: ethers.Contract): Promise<number> => {
 };
 
 const payOrder = async (contract: ethers.Contract): Promise<number> => {
-  const price = calculatePrice(contract).toString();
+  const price = await calculatePrice(contract);
   const response = await contract.payOrder({
     gasLimit: ethers.utils.hexlify(100000),
-    value: ethers.utils.parseEther("0.0001"),
+    value: ethers.utils.parseEther(price.toString()),
   });
+  console.log(response);
   return response;
 };
 
@@ -42,8 +43,9 @@ const getMenu = async (contract: ethers.Contract): Promise<IMenuItem[]> => {
       if (singleItem) {
         menuItemFromContract.push({
           id: singleItem[0].toNumber(),
-          name: singleItem[1],
-          price: singleItem[2].toNumber(),
+          category: singleItem[1],
+          name: singleItem[2],
+          price: singleItem[3].toNumber(),
         });
       }
     }

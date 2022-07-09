@@ -18,6 +18,7 @@ export interface Table {
 export type TMenuKeys = "id" | "name" | "price";
 export interface IMenuItem {
   id?: number;
+  category: string;
   name: string;
   price: number;
 }

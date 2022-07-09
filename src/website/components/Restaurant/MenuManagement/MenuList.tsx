@@ -15,11 +15,14 @@ export const MenuList = ({ menu, onSelect }: IMenuListProps) => {
           <div
             onClick={() => onItemSelection(item)}
             key={`${item.name}-${index}`}
-            className={`flex flex-col items-center justify-center shadow-md border-green-50 p-4 rounded-md bg-red-300 ${
+            className={`flex flex-col shadow-md border-green-50 p-4 rounded-md bg-red-300 ${
               onSelect ? "cursor-pointer hover:font-bold" : ""
             }`}
           >
-            {item.name} - {item.price} €
+            <h3>
+              {item.name} (id - {item.id})
+            </h3>
+            {item.price} €
           </div>
         ))}
       </div>

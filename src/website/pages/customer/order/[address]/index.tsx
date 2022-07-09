@@ -1,5 +1,7 @@
+import Basket from "@components/Basket";
 import Head from "@components/Head";
 import Layout from "@components/Layout";
+import LoadingSpinner from "@components/LoadingSpinner";
 import { MenuList } from "@components/Restaurant/MenuManagement";
 import { useOrder } from "@context/order";
 import { userService } from "@hooks/useService";
@@ -36,10 +38,15 @@ const Order: NextPage = () => {
     setTotalPrice,
     totalPrice,
     resetOrder,
+    basket,
+    setBasket,
+    resetBasket,
+    calculateBasketPrice,
   } = useOrder();
   const { OrderService, SmartContractService, RestaurantService } =
     userService("evm");
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [orderIsPlaced, setOrderIsPlaced] = useState(false);
 
   useEffect(() => {
     if (typeof address === "string") initializeContract(address);
@@ -87,11 +94,27 @@ const Order: NextPage = () => {
   };
 
   /* Only adding one item a time right now */
-  const onItemSelection = async (item: IMenuItem): Promise<void> => {
-    if (OrderService && item.id && contract) {
-      await OrderService.placeOrder([item.id], contract);
-      getPrice();
+  const placeOrder = async (): Promise<void> => {
+    if (OrderService && basket.items.length > 0 && contract) {
+      const ids = basket.items.map((item) => item.id);
+      if (ids.length > 0 && ids !== undefined) {
+        await OrderService.placeOrder(ids as number[], contract);
+        resetBasket();
+        setOrderIsPlaced(true);
+      }
     }
+  };
+
+  const onRemoveFromBasket = (index: number) => {
+    const itemListNew = [...basket.items];
+    itemListNew.splice(index, 1);
+    const price = calculateBasketPrice(itemListNew);
+    setBasket({ price, items: itemListNew });
+  };
+  const onAddToBasket = (item: IMenuItem) => {
+    const updatedItems = [...basket.items, item];
+    const price = calculateBasketPrice(updatedItems);
+    setBasket({ price, items: updatedItems });
   };
 
   const payBill = async (): Promise<void> => {
@@ -121,7 +144,13 @@ const Order: NextPage = () => {
                 </div>
                 <div>
                   <h2>Please order..</h2>
-                  <MenuList onSelect={onItemSelection} menu={menu} />
+                  <MenuList onSelect={onAddToBasket} menu={menu} />
+                  <Basket
+                    orderPlaced={orderIsPlaced}
+                    basket={basket}
+                    handlePlaceOrder={placeOrder}
+                    handleRemoveItem={onRemoveFromBasket}
+                  />
                 </div>
                 {orderItems.length > 0 && (
                   <div>
