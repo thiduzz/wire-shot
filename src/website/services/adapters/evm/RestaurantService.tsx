@@ -1,6 +1,7 @@
 import {
   ETableStatus,
   IMenuItem,
+  IMenuItemDetails,
   Restaurant,
   Table,
 } from "@local-types/restaurant";
@@ -8,7 +9,10 @@ import { ABIS } from "const";
 import { ethers } from "ethers";
 import { RestaurantServiceAbstract } from "services/providers/abstracts";
 import { SmartContractService } from "../../SmartContractService";
+import { menuApi } from "../airtable";
+import { IMenuDetails, IMenuItemDetails } from "../airtable/types";
 import { RestaurantServiceAbstractEVM } from "./abstracts";
+import { IItemAddedToMenuEvent } from "./abstracts/RestaurantServiceAbstractEVM";
 import { TableService } from "./TableService";
 
 export const getRestaurants = async (
@@ -108,7 +112,12 @@ const getCustomerOrders = async (
 };
 
 /* MENU */
-const getMenu = async (contract: ethers.Contract): Promise<IMenuItem[]> => {
+const getMenu = async (
+  contract: ethers.Contract
+): Promise<IMenuItemDetails[]> => {
+  const menuDetails = await menuApi.getMenuDetailsFromAirtable(
+    contract.address
+  );
   const numberOfItems = await contract!.MENU_ITEM_IDS();
   const menuItemFromContract: IMenuItem[] = [];
   if (numberOfItems.toNumber() > 0) {
@@ -117,29 +126,42 @@ const getMenu = async (contract: ethers.Contract): Promise<IMenuItem[]> => {
       if (singleItem) {
         menuItemFromContract.push({
           id: singleItem[0].toNumber(),
-          category: singleItem[1],
-          name: singleItem[2],
-          price: singleItem[3].toNumber(),
+          name: singleItem[1],
+          price: singleItem[2].toNumber(),
         });
       }
     }
     if (menuItemFromContract.length > 0) {
-      return menuItemFromContract;
+      const menuItems = generateMenu(menuItemFromContract, menuDetails);
+      return menuItems;
     }
   }
   return [];
 };
 
 const addMenuItems = async (
-  items: IMenuItem[],
+  items: IMenuItemDetails[],
   contract: ethers.Contract
-): Promise<boolean> => {
+): Promise<any> => {
+  contract.on(
+    "ItemAddedToMenu",
+    (from, to, value, event: IItemAddedToMenuEvent) => {
+      const matchingItem = items.find((item) => item.name === event.args.name);
+      if (matchingItem) {
+        matchingItem.id = event.args.id.toNumber();
+        matchingItem.price = event.args.price.toNumber();
+        console.log("creating item", matchingItem);
+        menuApi.createMenuDetailsInAirtable(matchingItem, contract.address);
+      }
+    }
+  );
   return Promise.all(
     items.map(async (item) => {
-      return contract.addMenuItem(item.name, item.category, item.price);
+      return contract.addMenuItem(item.name, item.price);
     })
   )
     .then((data: any) => {
+      /* TODO - temporary save values, listen to event on contract and then add to airtable */
       return data;
     })
     .catch((err: any) => {
@@ -172,6 +194,19 @@ const getMatchingOrders = async (
       console.log("Error while getting matching orders for customer", err);
       return matchingOrders;
     });
+};
+
+const generateMenu = (
+  menuItemFromContract: IMenuItem[],
+  menuDetails: IMenuDetails
+): IMenuItemDetails[] => {
+  return menuItemFromContract.map((items) => {
+    return {
+      ...items,
+      category: menuDetails[items.id!]?.category,
+      description: menuDetails[items.id!]?.description,
+    };
+  });
 };
 
 export const RestaurantService: RestaurantServiceAbstract<RestaurantServiceAbstractEVM> =

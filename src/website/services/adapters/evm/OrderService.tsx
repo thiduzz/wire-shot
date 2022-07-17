@@ -43,7 +43,6 @@ const getMenu = async (contract: ethers.Contract): Promise<IMenuItem[]> => {
       if (singleItem) {
         menuItemFromContract.push({
           id: singleItem[0].toNumber(),
-          category: singleItem[1],
           name: singleItem[2],
           price: singleItem[3].toNumber(),
         });

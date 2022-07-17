@@ -1,5 +1,5 @@
 import { IBasket } from "@local-types/order";
-import { IMenuItem } from "@local-types/restaurant";
+import { IMenuItem, IMenuItemDetails } from "@local-types/restaurant";
 import { ABIS } from "const";
 import { ethers } from "ethers";
 import {
@@ -24,7 +24,7 @@ interface IOrderContext {
     contract: ethers.Contract | null;
     name: string;
   };
-  menu: IMenuItem[];
+  menu: IMenuItemDetails[];
   basket: {
     price: number;
     items: IMenuItem[];

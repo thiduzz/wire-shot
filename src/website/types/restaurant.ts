@@ -15,18 +15,23 @@ export interface Table {
   status: ETableStatus;
 }
 
-export type TMenuKeys = "id" | "name" | "price";
+export type TMenuKeys = "id" | "name" | "price" | "description" | "category";
 export interface IMenuItem {
-  id?: number;
-  category: string;
   name: string;
   price: number;
+  id?: number;
+}
+
+
+export interface IMenuItemDetails extends IMenuItem {
+  category: string;
+  description: string;
 }
 
 export interface Restaurant {
   name: string;
   tables: Array<Table>;
-  menu: Array<IMenuItem>;
+  menu: Array<IMenuItemDetails>;
   contract?: ethers.Contract;
   address:string;
 }

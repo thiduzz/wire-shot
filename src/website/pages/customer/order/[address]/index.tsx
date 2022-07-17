@@ -5,19 +5,20 @@ import LoadingSpinner from "@components/LoadingSpinner";
 import { MenuList } from "@components/Restaurant/MenuManagement";
 import { useOrder } from "@context/order";
 import { userService } from "@hooks/useService";
-import { IMenuItem } from "@local-types/restaurant";
+import { IMenuItem, IMenuItemDetails } from "@local-types/restaurant";
 import { ABIS } from "const";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { IoEllipseOutline } from "react-icons/io5";
+import { formatMenuByCategory } from "utils/menu";
 
 const enrichtOrderedItemsWithInfo = (
-  menu: IMenuItem[],
+  menu: IMenuItemDetails[],
   itemIds: number[]
-): IMenuItem[] => {
+): IMenuItemDetails[] => {
   const enrichtedData = itemIds.map((id: number) => {
-    return menu.filter((menuItem: IMenuItem) => menuItem.id === id)[0];
+    return menu[id];
   });
   return enrichtedData;
 };
@@ -144,7 +145,11 @@ const Order: NextPage = () => {
                 </div>
                 <div>
                   <h2>Please order..</h2>
-                  <MenuList onSelect={onAddToBasket} menu={menu} />
+                  <MenuList
+                    type="overview"
+                    onSelect={onAddToBasket}
+                    menu={formatMenuByCategory(menu)}
+                  />
                   <Basket
                     orderPlaced={orderIsPlaced}
                     basket={basket}
@@ -156,7 +161,10 @@ const Order: NextPage = () => {
                   <div>
                     <h2>You ordered already...</h2>
                     <MenuList
-                      menu={enrichtOrderedItemsWithInfo(menu, orderItems)}
+                      type="ordered"
+                      menu={formatMenuByCategory(
+                        enrichtOrderedItemsWithInfo(menu, orderItems)
+                      )}
                     />
                     <div className="my-8">
                       Your total Price:{" "}

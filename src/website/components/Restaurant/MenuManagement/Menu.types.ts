@@ -1,11 +1,17 @@
-import { IMenuItem, TMenuKeys } from "@local-types/restaurant";
+import { IMenuItem } from "@local-types/restaurant";
+import { IMenuItemDetails } from './../../../types/restaurant';
 
 export interface IMenuCreateProps {
-  menu: IMenuItem;
-  onChange: (value: IMenuItem) => void;
+  menu: IMenuItemDetails;
+  onChange: (value: IMenuItemDetails) => void;
 }
 
 export interface IMenuListProps {
-  menu: IMenuItem[];
-  onSelect?: (item: IMenuItem) => void;
+  menu: IMenuByCategory;
+  type: "ordered" | "overview";
+  onSelect?: (item: IMenuItemDetails) => void;
+}
+
+export interface IMenuByCategory {
+  [key: string]: IMenuItemDetails[];
 }

@@ -1,6 +1,18 @@
-import { IMenuItem, Restaurant, Table } from "@local-types/restaurant";
+import {
+  IMenuItem,
+  IMenuItemDetails,
+  Restaurant,
+  Table,
+} from "@local-types/restaurant";
 import { ethers } from "ethers";
 
+export interface IItemAddedToMenuEvent {
+  args: {
+    id: any;
+    name: string;
+    price: any;
+  };
+}
 export abstract class RestaurantServiceAbstractEVM {
   abstract getRestaurants: (
     address: string,
@@ -19,7 +31,7 @@ export abstract class RestaurantServiceAbstractEVM {
     tables: Table[]
   ) => Promise<string[]>;
   abstract addMenuItems: (
-    items: IMenuItem[],
+    items: IMenuItemDetails[],
     contract: ethers.Contract
   ) => Promise<boolean>;
   abstract addTables: (names: string[], contract: ethers.Contract) => any;

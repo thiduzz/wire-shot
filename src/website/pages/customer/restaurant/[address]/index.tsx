@@ -9,6 +9,7 @@ import { Table } from "@local-types/restaurant";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
+import { formatMenuByCategory } from "utils/menu";
 
 const Restaurant: NextPage = () => {
   const router = useRouter();
@@ -76,7 +77,7 @@ const Restaurant: NextPage = () => {
                 </div>
                 <div>
                   <h2>Menu</h2>
-                  <MenuList menu={restaurant.menu} />
+                  <MenuList menu={formatMenuByCategory(restaurant.menu)} />
                 </div>
               </div>
             </div>

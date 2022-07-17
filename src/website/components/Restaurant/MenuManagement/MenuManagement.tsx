@@ -1,21 +1,29 @@
 import { useRestaurant } from "@context/restaurant";
 import { userService } from "@hooks/useService";
-import { IMenuItem } from "@local-types/restaurant";
-import React, { useState } from "react";
+import { IMenuItem, IMenuItemDetails } from "@local-types/restaurant";
+import React, { useEffect, useState } from "react";
 import { MenuCreate, MenuList } from ".";
 import { IoAddSharp, IoRemoveCircle } from "react-icons/io5";
+import { formatMenuByCategory } from "utils/menu";
 
 export const MenuManagement = () => {
-  const defaultItemState = [{ name: "", price: 0, category: "" }];
-  const [menuItems, setMenuItems] = useState<IMenuItem[]>(defaultItemState);
+  const defaultItemState = [
+    { name: "", price: 0, category: "", description: "" },
+  ];
+  const [menuItems, setMenuItems] =
+    useState<IMenuItemDetails[]>(defaultItemState);
   const { restaurant } = useRestaurant();
   const { RestaurantService } = userService("evm");
 
-  const updateItemDetails = (index: number, item: IMenuItem) => {
+  const updateItemDetails = (index: number, item: IMenuItemDetails) => {
     const updatedList = [...menuItems];
-    updatedList[index] = { ...item, price: item.price < 0 ? 0 : item.price };
+    updatedList[index] = {
+      ...item,
+      price: item.price < 0 ? 0 : item.price,
+    };
     setMenuItems(updatedList);
   };
+
   const handleCreateMenu = async () => {
     if (restaurant?.contract) {
       await RestaurantService.addMenuItems(menuItems, restaurant.contract);
@@ -31,7 +39,7 @@ export const MenuManagement = () => {
 
   const addNewLineItem = () => {
     const itemListNew = [...menuItems];
-    itemListNew.push({ name: "", price: 0, category: "" });
+    itemListNew.push({ name: "", price: 0, category: "", description: "" });
     setMenuItems(itemListNew);
   };
 
@@ -39,7 +47,10 @@ export const MenuManagement = () => {
     <div>
       {restaurant && restaurant.menu.length > 0 ? (
         <div className="flex flex-col">
-          <MenuList menu={restaurant.menu} />
+          <MenuList
+            menu={formatMenuByCategory(restaurant.menu)}
+            type="overview"
+          />
         </div>
       ) : (
         <div>Please create a menu</div>
@@ -52,7 +63,9 @@ export const MenuManagement = () => {
           >
             <MenuCreate
               menu={item}
-              onChange={(value: IMenuItem) => updateItemDetails(index, value)}
+              onChange={(value: IMenuItemDetails) =>
+                updateItemDetails(index, value)
+              }
             />
             {index === menuItems.length - 1 && (
               <button
