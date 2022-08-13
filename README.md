@@ -12,7 +12,7 @@ Restaurant Guest
 1. Select a restaurant
 2. Check in to a table
 3. Order items
-4. Pay your bill and checkout
+4. Pay your bill and checkout (Checkout only possible if your wallet covers enough matic according what you have ordered. You need to wait a bit and then the table will be set to free and you have paid + checked out)
 
 # Limitations
 Currently we do not support any on chain event subscription. Meaning if you interact with the smart contract it might take a while and you need to refresh the page to see the changes made (example: adding a new restaurant or table)
