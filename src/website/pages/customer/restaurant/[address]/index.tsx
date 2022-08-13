@@ -77,7 +77,10 @@ const Restaurant: NextPage = () => {
                 </div>
                 <div>
                   <h2>Menu</h2>
-                  <MenuList menu={formatMenuByCategory(restaurant.menu)} />
+                  <MenuList
+                    type="fixed"
+                    menu={formatMenuByCategory(restaurant.menu)}
+                  />
                 </div>
               </div>
             </div>

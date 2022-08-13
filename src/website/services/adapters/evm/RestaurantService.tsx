@@ -10,9 +10,8 @@ import { ethers } from "ethers";
 import { RestaurantServiceAbstract } from "services/providers/abstracts";
 import { SmartContractService } from "../../SmartContractService";
 import { menuApi } from "../airtable";
-import { IMenuDetails, IMenuItemDetails } from "../airtable/types";
+import { IMenuDetails } from "../airtable/types";
 import { RestaurantServiceAbstractEVM } from "./abstracts";
-import { IItemAddedToMenuEvent } from "./abstracts/RestaurantServiceAbstractEVM";
 import { TableService } from "./TableService";
 
 export const getRestaurants = async (
@@ -143,20 +142,21 @@ const addMenuItems = async (
   items: IMenuItemDetails[],
   contract: ethers.Contract
 ): Promise<any> => {
-  contract.on(
-    "ItemAddedToMenu",
-    (from, to, value, event: IItemAddedToMenuEvent) => {
-      const matchingItem = items.find((item) => item.name === event.args.name);
-      if (matchingItem) {
-        matchingItem.id = event.args.id.toNumber();
-        matchingItem.price = event.args.price.toNumber();
-        console.log("creating item", matchingItem);
-        menuApi.createMenuDetailsInAirtable(matchingItem, contract.address);
-      }
-    }
-  );
+  /* Should be implemented to only sync airtable once added to the ledger */
+  // contract.on(
+  //   "ItemAddedToMenu",
+  //   (from, to, value, event: IItemAddedToMenuEvent) => {
+  //     const matchingItem = items.find((item) => item.name === event.args.name);
+  //     if (matchingItem) {
+  //       matchingItem.id = event.args.id.toNumber();
+  //       matchingItem.price = event.args.price.toNumber();
+  //       menuApi.createMenuDetailsInAirtable(matchingItem, contract.address);
+  //     }
+  //   }
+  // );
   return Promise.all(
     items.map(async (item) => {
+      menuApi.createMenuDetailsInAirtable(item, contract.address);
       return contract.addMenuItem(item.name, item.price);
     })
   )
@@ -165,7 +165,7 @@ const addMenuItems = async (
       return data;
     })
     .catch((err: any) => {
-      console.log("Error while getting matching orders for customer", err);
+      console.log("Error while creating menu item", err);
       throw Error();
     });
 };
@@ -203,8 +203,8 @@ const generateMenu = (
   return menuItemFromContract.map((items) => {
     return {
       ...items,
-      category: menuDetails[items.id!]?.category,
-      description: menuDetails[items.id!]?.description,
+      category: menuDetails[items.name]?.category,
+      description: menuDetails[items.name]?.description,
     };
   });
 };

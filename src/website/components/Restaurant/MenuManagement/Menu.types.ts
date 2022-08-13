@@ -8,7 +8,7 @@ export interface IMenuCreateProps {
 
 export interface IMenuListProps {
   menu: IMenuByCategory;
-  type: "ordered" | "overview";
+  type?: "fixed" | "interactive";
   onSelect?: (item: IMenuItemDetails) => void;
 }
 

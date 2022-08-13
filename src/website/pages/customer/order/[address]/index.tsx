@@ -17,8 +17,8 @@ const enrichtOrderedItemsWithInfo = (
   menu: IMenuItemDetails[],
   itemIds: number[]
 ): IMenuItemDetails[] => {
-  const enrichtedData = itemIds.map((id: number) => {
-    return menu[id];
+  const enrichtedData = menu.filter((item: IMenuItemDetails) => {
+    return item.id && itemIds.includes(item.id);
   });
   return enrichtedData;
 };
@@ -146,7 +146,7 @@ const Order: NextPage = () => {
                 <div>
                   <h2>Please order..</h2>
                   <MenuList
-                    type="overview"
+                    type="interactive"
                     onSelect={onAddToBasket}
                     menu={formatMenuByCategory(menu)}
                   />
@@ -161,7 +161,7 @@ const Order: NextPage = () => {
                   <div>
                     <h2>You ordered already...</h2>
                     <MenuList
-                      type="ordered"
+                      type="fixed"
                       menu={formatMenuByCategory(
                         enrichtOrderedItemsWithInfo(menu, orderItems)
                       )}
